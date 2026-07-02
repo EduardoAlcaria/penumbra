@@ -1,0 +1,22 @@
+# Reference clone only — not part of penumbra
+/OpenRGB/
+
+# Session scratch
+/.remember/
+
+# Backend build + local DB
+/app/backend/target/
+/app/backend/data/
+*.mv.db
+*.trace.db
+
+# Frontend
+/app/frontend/node_modules/
+/app/frontend/dist/
+
+# Editor / OS
+.idea/
+.vscode/
+*.iml
+Thumbs.db
+.DS_Store
