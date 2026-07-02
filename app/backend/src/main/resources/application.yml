@@ -18,5 +18,4 @@ spring:
 
 penumbra:
   render-fps: 60
-  # where SignalRGB is installed, used ONCE to import passive-gear LED maps
-  signal-components-dir: "C:/Users/Eduardo Alcaria/AppData/Local/VortxEngine/app-2.5.72/Signal-x64/Components"
+  # component LED maps are bundled in classpath:/components — no SignalRGB needed
