@@ -4,19 +4,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.*;
-import java.util.stream.Stream;
-
 /**
- * One-time data import. Populates H2 from what SignalRGB already has on disk:
- *  - passive gear LED maps  <- Components/*.json  (pure data, copied as-is)
- *  - controller recipes     <- extracted by hand from the device .js into profiles
+ * One-time data import. Populates H2 from data BUNDLED IN THE JAR:
+ *  - passive gear LED maps  <- classpath:/components/**.json (copied from SignalRGB once, now ours)
+ *  - controller recipes     <- extracted from the device .js into code below
  *
- * Runs only when tables are empty, so it's cheap on every boot.
+ * No dependency on SignalRGB at runtime OR first boot. Runs only when tables
+ * are empty, so it's cheap on every start.
  */
 @Component
 public class ProfileSeeder implements CommandLineRunner {
@@ -25,9 +24,6 @@ public class ProfileSeeder implements CommandLineRunner {
     private final ControllerProfileRepository controllers;
     private final ComponentProfileRepository components;
     private final ObjectMapper mapper = new ObjectMapper();
-
-    @Value("${penumbra.signal-components-dir:}")
-    private String componentsDir;
 
     public ProfileSeeder(ControllerProfileRepository controllers, ComponentProfileRepository components) {
         this.controllers = controllers;
@@ -68,19 +64,15 @@ public class ProfileSeeder implements CommandLineRunner {
         return p;
     }
 
-    /** Copy every SignalRGB Components/*.json into component_profile. */
+    /** Load every bundled classpath:/components/**.json into component_profile. */
     private void importComponents() {
-        if (componentsDir == null || componentsDir.isBlank()) return;
-        Path root = Paths.get(componentsDir);
-        if (!Files.isDirectory(root)) {
-            log.warn("Components dir not found, skipping import: {}", componentsDir);
-            return;
-        }
-        int[] n = {0};
-        try (Stream<Path> paths = Files.walk(root)) {
-            paths.filter(pp -> pp.toString().toLowerCase().endsWith(".json")).forEach(pp -> {
-                try {
-                    JsonNode j = mapper.readTree(Files.readString(pp));
+        int n = 0;
+        try {
+            Resource[] files = new PathMatchingResourcePatternResolver()
+                    .getResources("classpath*:/components/**/*.json");
+            for (Resource r : files) {
+                try (var in = r.getInputStream()) {
+                    JsonNode j = mapper.readTree(in);
                     ComponentProfile c = new ComponentProfile();
                     c.setProductName(text(j, "ProductName"));
                     c.setDisplayName(text(j, "DisplayName"));
@@ -94,15 +86,15 @@ public class ProfileSeeder implements CommandLineRunner {
                     c.setLedNamesJson(nodeStr(j, "LedNames"));
                     c.setImageUrl(text(j, "ImageUrl"));
                     components.save(c);
-                    n[0]++;
+                    n++;
                 } catch (Exception e) {
-                    log.debug("Skip {}: {}", pp, e.getMessage());
+                    log.debug("Skip {}: {}", r.getFilename(), e.getMessage());
                 }
-            });
+            }
         } catch (Exception e) {
             log.warn("Component import failed: {}", e.getMessage());
         }
-        log.info("Imported {} component profiles from SignalRGB", n[0]);
+        log.info("Imported {} bundled component profiles", n);
     }
 
     private static String text(JsonNode j, String field) {
