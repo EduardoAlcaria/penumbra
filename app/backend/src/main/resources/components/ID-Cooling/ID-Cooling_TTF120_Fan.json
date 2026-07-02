@@ -1,0 +1,29 @@
+{
+    "ProductName": "ID-Cooling TF120",
+    "DisplayName": "ID-Cooling TF120 - 14 LED",
+    "Brand" : "ID-Cooling",
+    "Type" : "Fan",
+    "LedCount" : 14,
+    "Width": 7,
+    "Height": 6,
+    "LedMapping" : [
+        0,13,12,
+      1,        11,
+    2,             10,
+    3,             9,
+      4,        8,
+        5,6,7
+        ],
+    "LedCoordinates" : [
+            [2,0],[3,0],[4,0],
+        [1,1],              [5,1],
+    [0,2],                      [6,2],
+    [0,3],                      [6,3],
+        [1,4],              [5,4],
+            [2,5],[3,5],[4,5]  
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11","Led 12","Led 13","Led 14"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/id-cooling/fans/tf120.png"
+}

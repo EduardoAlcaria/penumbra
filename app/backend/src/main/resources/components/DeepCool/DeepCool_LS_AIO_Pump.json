@@ -1,0 +1,38 @@
+{
+    "ProductName": "DeepCool LS AIO Pump",
+    "DisplayName": "DeepCool LS AIO Pump - 12 LED",
+    "Brand": "DeepCool",
+    "Type": "AIO",
+    "LedCount": 12,
+    "Width": 5,
+    "Height": 5,
+    "LedMapping": [
+          6,7,8,
+        5,      9,
+        4,      10,
+        3,      11,
+          2,1,0
+    ],
+    "LedCoordinates": [
+        [1,0],[2,0],[3,0],
+    [0,1],               [4,1],
+    [0,2],               [4,2],
+    [0,3],               [4,3],
+        [1,4],[2,4],[3,4]
+    ],
+    "LedNames": [
+        "Led1",
+        "Led2",
+        "Led3",
+        "Led4",
+        "Led5",
+        "Led6",
+        "Led7",
+        "Led8",
+        "Led9",
+        "Led10",
+        "Led11",
+        "Led12"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/deepcool/aios/ls.png"
+}

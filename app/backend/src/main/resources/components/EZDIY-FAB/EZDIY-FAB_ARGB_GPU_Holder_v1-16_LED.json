@@ -1,0 +1,13 @@
+{
+    "ProductName": "EZDIY-FAB 16 RGB GPU Holder",
+    "DisplayName": "EZDIY-FAB RGB GPU Holder - 16 LED",
+    "Brand": "EZDIY-FAB",
+    "Type": "custom",
+    "LedCount": 16,
+    "Width": 16,
+    "Height": 1,
+    "LedMapping":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+    "LedCoordinates":[[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0],[10,0],[11,0],[12,0],[13,0],[14,0],[15,0]],
+    "LedNames":["Led1","Led2","Led3","Led4","Led5","Led6","Led7","Led8","Led9","Led10","Led11","Led12","Led13","Led14","Led15","Led16"],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/ezdiy-fab/misc/gpu-bracket-v2.png"
+}

@@ -1,0 +1,26 @@
+{
+    "ProductName": "Xilence M.2 ARGB Cover",
+    "DisplayName": "Xilence M.2 Cover",
+    "Brand": "Xilence",
+    "Type": "Strip",
+    "LedCount": 5,
+    "Width": 5,
+    "Height": 1,
+    "LedMapping": 
+    [
+        0,1,2,3,4
+    ],
+    "LedCoordinates": 
+    [
+        [0,0],[1,0],[2,0],[3,0],[4,0]
+    ],
+    "LedNames": 
+    [
+        "Led1",
+        "Led2",
+        "Led3",
+        "Led4",
+        "Led5"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/xilence/misc/m2-argb-cover.png"
+}

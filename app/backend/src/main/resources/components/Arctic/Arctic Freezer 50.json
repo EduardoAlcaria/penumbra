@@ -1,0 +1,33 @@
+{
+    "ProductName": "ARCTIC Freezer 50 A-RGB",
+    "DisplayName": "ARCTIC Freezer 50 A-RGB",
+    "Brand": "ARCTIC",
+    "Type": "Heatsink",
+    "LedCount": 13,
+    "Width": 6,
+    "Height": 5,
+    "LedMapping": [
+        0,1,2,3,4,5,6,7,8,9,10,11,12
+    ],
+    "LedCoordinates": 
+    [ 
+      [3,2], [4,2], [3,1], [5,0], [5,1], [5,2], [5,3], [5,4], [0,4], [0,3], [0,2], [0,1], [0,0]
+    ],
+    "LedNames": 
+    [
+        "Logo 1",
+        "Logo 2",
+        "Logo 3",
+        "Right Strip 1",
+        "Right Strip 2",
+        "Right Strip 3",
+        "Right Strip 4",
+        "Right Strip 5",
+        "Left Strip 1",
+        "Left Strip 2",
+        "Left Strip 3",
+        "Left Strip 4",
+        "Left Strip 5"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/arctic/heatsink/freezer-50.png"
+}

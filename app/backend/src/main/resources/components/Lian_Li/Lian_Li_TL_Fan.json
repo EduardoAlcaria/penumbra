@@ -1,0 +1,37 @@
+{
+  "ProductName": "Lian Li TL",
+  "DisplayName": "Lian Li TL - 26 LED",
+  "Brand": "LianLi",
+  "Type": "Fan",
+  "LedCount": 26,
+  "Width": 13,
+  "Height": 13,
+  "LedCoordinates": [
+              [3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0],
+          [2,1],                                       [10,1],
+      [1,2],                                                [11,2],
+  [0,3],                                                          [12,3],
+
+
+
+  [0,9],                                                          [12,9],
+    [1,10],                                                  [11,10],
+        [2,11],                                         [10,11],
+            [3,12],[4,12],[5,12],[6,12],[7,12],[8,12],[9,12]
+    ],
+ "LedMapping": [
+        16,17,18,19,20,21,22,
+      15,                   23,
+    14,                       24,
+  13,                           25,
+  
+  0,                            12,
+    1,                        11,
+      2,                    10,
+        3, 4, 5, 6, 7, 8, 9
+  ],
+ "LedNames": [
+  "Led1", "Led2", "Led3", "Led4", "Led5", "Led6", "Led7", "Led8", "Led9", "Led10", "Led11", "Led12", "Led13",
+  "Led14", "Led15", "Led16", "Led17", "Led18", "Led19", "Led20", "Led21", "Led22", "Led23", "Led24", "Led25", "Led26"],
+  "ImageUrl":"https://assets.signalrgb.com/devices/brands/lian-li/fans/tl-fan.png"
+}

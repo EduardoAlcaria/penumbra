@@ -1,0 +1,106 @@
+{
+  "ProductName": "ThermalRight TL-S12",
+  "DisplayName": "ThermalRight TL-S12",
+  "Brand": "Thermalright",
+  "Type": "Fan",
+  "LedCount": 15,
+  "Width": 8,
+  "Height": 8,
+  "LedMapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "LedCoordinates": [
+    [
+      6,
+      2
+    ],
+    [
+      5,
+      1
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      3,
+      0
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      2,
+      6
+    ],
+    [
+      3,
+      7
+    ],
+    [
+      4,
+      7
+    ],
+    [
+      5,
+      6
+    ],
+    [
+      6,
+      5
+    ],
+    [
+      7,
+      4
+    ]
+  ],
+  "LedNames": [
+    "Led1",
+    "Led2",
+    "Led3",
+    "Led4",
+    "Led5",
+    "Led6",
+    "Led7",
+    "Led8",
+    "Led9",
+    "Led10",
+    "Led11",
+    "Led12",
+    "Led13",
+    "Led14",
+    "Led15"
+  ],
+  "ImageUrl": "https://assets.signalrgb.com/devices/brands/thermalright/fans/tl-s12.png"
+}

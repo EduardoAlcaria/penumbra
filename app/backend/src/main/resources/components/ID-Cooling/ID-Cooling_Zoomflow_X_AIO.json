@@ -1,0 +1,29 @@
+{
+    "ProductName": "ID-Cooling Zoomflow X",
+    "DisplayName": "ID-Cooling Zoomflow X - 11 LED",
+    "Brand" : "ID-Cooling",
+    "Type" : "AIO",
+    "LedCount" : 11,
+    "Width": 6,
+    "Height": 6,
+    "LedMapping" : [
+        0,10,
+      1,    9,
+    2,        8,
+    3,        
+      4,    7,
+        5,6
+        ],
+    "LedCoordinates" : [
+            [2,0],[3,0],
+        [1,1],        [4,1],
+    [0,2],                [5,2],
+    [0,3],                
+        [1,4],        [4,4],
+            [2,5],[3,5]  
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/id-cooling/aios/zoomflow-x.png"
+}

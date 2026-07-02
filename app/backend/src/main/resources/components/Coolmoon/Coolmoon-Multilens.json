@@ -1,0 +1,33 @@
+{
+    "ProductName": "Coolmoon Multilens ARGB",
+    "DisplayName": "Coolmoon Multilens ARGB - 18 LED",
+    "Brand" : "Coolmoon",
+    "Type" : "Fan",
+    "LedCount" : 18,
+    "Width": 7,
+    "Height": 8,
+    "LedMapping" : [
+            15,16,17,
+           14,      0,
+        13,           1,
+        12,           2,
+        11,           3,
+        10,           4,
+           9,       5,
+             8,7,6
+        ],
+    "LedCoordinates" : [
+        [2,0],[3,0],[4,0],
+      [1,1],          [5,1],
+    [0,2],              [6,2],
+    [0,3],              [6,3],
+    [0,4],              [6,4],
+    [0,5],              [6,5],
+      [1,6],          [5,6],
+        [2,7],[3,7],[4,7]
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11","Led 12","Led 13","Led 14","Led 15","Led 16","Led 17","Led 18"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/coolmoon/fans/dm1.png"
+}

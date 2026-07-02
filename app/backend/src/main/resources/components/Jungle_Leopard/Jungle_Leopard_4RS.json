@@ -1,0 +1,27 @@
+{
+    "ProductName": "Jungle Leopard 4RS",
+    "DisplayName": "Jungle Leopard 4RS - 16 LED",
+    "Brand" : "Jungle Leopard",
+    "Type" : "Fan",
+    "LedCount" : 16,
+    "Width": 9,
+    "Height": 5,
+    "LedMapping" :[ 
+	    8,9,10,11,12,
+	  7,             13,
+	6,                 14,
+	  5,             15, 
+	    4, 3, 2, 1, 0
+		 ],
+    "LedCoordinates" : [
+         [2,0],[3,0],[4,0],[5,0],[6,0],
+      [1,1],                         [7,1],
+    [0,2],                              [8,2],
+      [1,3],                         [7,3], 
+		 [2,4],[3,4],[4,4],[5,4],[6,4]
+		 ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11","Led 12","Led 13","Led 14","Led 15","Led 16"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/jungle-leopard/fans/4rs.png"
+}

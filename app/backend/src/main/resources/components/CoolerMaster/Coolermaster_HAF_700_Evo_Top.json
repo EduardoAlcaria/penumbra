@@ -1,0 +1,13 @@
+{
+    "ProductName": "CoolerMaster HAF 700 Evo Top",
+    "DisplayName": "CoolerMaster HAF 700 Evo Front Panel Top",
+    "Brand" : "CoolerMaster",
+    "Type" : "Case",
+    "LedCount" : 6,
+    "Width": 6,
+    "Height": 1,
+    "LedMapping" : [ 0, 1, 2, 3, 4, 5 ],
+    "LedCoordinates" : [ [0, 0],  [1, 0],  [2, 0],  [3, 0],  [4, 0],  [5, 0] ],
+    "LedNames" : [ "Top 1", "Top 2", "Top 3", "Top 4", "Top 5", "Top 6" ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/coolermaster/cases/haf-700-evo.png"
+}

@@ -1,0 +1,26 @@
+{
+  "ProductName": "LianLi SL140 Infinity Inner",
+  "DisplayName": "LianLi UNIFan SL140 Infinity Inner - 8 LED",
+  "Brand": "LianLi",
+  "Type": "Fan",
+  "LedCount": 8,
+  "Width": 5,
+  "Height": 5,
+  "LedMapping": [
+      0,1,2,3,4,5,6,7
+  ],
+  "LedCoordinates": [ 
+    [0,1], [1,0], [3,0], [4,1], [4,3], [3,4], [1,4], [0,3]
+  ],
+  "LedNames": [
+      "Led1",
+      "Led2",
+      "Led3",
+      "Led4",
+      "Led5",
+      "Led6",
+      "Led7",
+      "Led8"
+  ],
+  "ImageUrl":"https://assets.signalrgb.com/devices/brands/lian-li/fans/sl-infinity-inner.png"
+}

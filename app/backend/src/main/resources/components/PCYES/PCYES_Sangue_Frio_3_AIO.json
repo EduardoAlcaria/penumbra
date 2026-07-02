@@ -1,0 +1,29 @@
+{
+    "ProductName": "PCYES Sangue Frio 3 AIO",
+    "DisplayName": "PCYES Sangue Frio 3 AIO - 12 LED",
+    "Brand" : "PCYES",
+    "Type" : "AIO",
+    "LedCount" : 12,
+    "Width": 6,
+    "Height": 6,
+    "LedMapping" : [
+        11,0,
+      10,    1,
+    9,        2,
+    8,        3,
+      7,    4,
+        6,5
+        ],
+    "LedCoordinates" : [
+            [2,0],[3,0],
+        [1,1],        [4,1],
+    [0,2],                [5,2],
+    [0,3],                [5,3],
+        [1,4],        [4,4],
+            [2,5],[3,5]  
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11","Led 12"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/pcyes/aios/sangue-frio-3.png"
+}

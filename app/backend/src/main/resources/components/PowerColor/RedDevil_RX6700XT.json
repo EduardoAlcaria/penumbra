@@ -1,0 +1,19 @@
+{
+    "ProductName": "PowerColor RX 6700XT Red Devil",
+    "DisplayName": "PowerColor RX 6700XT Red Devil - 5 LED",
+    "Brand" : "PowerColor",
+    "Type" : "Strip",
+    "LedCount" : 5,
+    "Width": 5,
+    "Height": 1,
+    "LedMapping" : [
+      0,1,2,3,4
+    ],
+    "LedCoordinates" : [
+      [4,0],[3,0],[2,0],[1,0],[0,0]
+    ],
+    "LedNames" : [
+      "Led 1","Led 2","Led 3","Led 4","Led 5"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/powercolor/gpu/red-devil-6000.png"
+}

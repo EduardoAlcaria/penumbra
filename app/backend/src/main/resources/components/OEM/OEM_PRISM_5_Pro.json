@@ -1,0 +1,27 @@
+{
+    "ProductName": "OEM PRISM 5 PRO",
+    "DisplayName": "OEM PRISM 5 PRO - 17 LEDs",
+    "Brand" : "OEM",
+    "Type" : "Fan",
+    "LedCount" : 17,
+    "Width": 8,
+    "Height": 5,
+    "LedMapping" :[ 
+	    6,7,8,9,10,11,12,13,
+	               
+	               
+	    5,            
+	    4,3,2,1,0,16,15,14
+		 ],
+    "LedCoordinates" : [
+        [0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],
+                              
+                                  
+        [0,3],                      
+        [0,4],[1,4],[2,4],[3,4],[4,4],[5,4],[6,4],[7,4]
+		 ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11","Led 12","Led 13","Led 14","Led 15","Led 16","Led 17"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/oem/fans/prism-5-pro.png"
+}

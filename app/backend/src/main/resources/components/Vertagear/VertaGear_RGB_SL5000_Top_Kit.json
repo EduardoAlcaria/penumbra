@@ -1,0 +1,70 @@
+{
+    "ProductName": "Vertagear SL5000 RGB Top Kit (Chair Front and Back)",
+    "DisplayName": "Vertagear SL5000 RGB Top Kit (Chair Front and Back) - 26 Led",
+    "Brand" : "Vertagear",
+    "Type" : "Chair",
+    "LedCount" : 26,
+    "Width": 8,
+    "Height": 7,
+    "LedMapping" : [
+        0, 1, 2, 3, 4,
+                    5, 
+             8, 7, 6,
+               
+                    
+        9,
+
+            23,22,21,20,19,18,17,
+        24,                 16,
+        25,                15,
+        10, 11, 12, 13, 14 
+
+        ],
+    "LedCoordinates" : [
+        [1,0], [2,1], [3,1], [4,2], 
+                                [5,3],
+                                [5,4],
+                   [3,4], [4,5], [5,5],
+                    
+                    
+        [2,3],
+        
+        [6,3],[5,3],[4,2],[3,2],[2,1],[1,1],[0,0],  
+        [7,4],                              [0,1],
+        [7,5],                              [0,2],
+                [5,6],[4,6],[3,5],[2,4],[1,3]
+    ],
+
+    "LedNames" : [
+        "Back Side - Led 1",
+        "Back Side - Led 2",
+        "Back Side - Led 3",
+        "Back Side - Led 4",
+        "Back Side - Led 5",
+        "Back Side - Led 6",
+        "Back Side - Led 7",
+        "Back Side - Led 8",
+        "Back Side - Led 9",
+
+        "Center",
+
+        "Front Side - Led 1",
+        "Front Side - Led 2",
+        "Front Side - Led 3",
+        "Front Side - Led 4",
+        "Front Side - Led 5",
+
+        "Front Side - Led 6",
+        "Front Side - Led 7",
+        "Front Side - Led 8",
+        "Front Side - Led 9",
+        "Front Side - Led 10",
+        "Front Side - Led 11",
+        "Front Side - Led 12",
+        "Front Side - Led 13",
+        "Front Side - Led 14",
+        "Front Side - Led 15",
+        "Front Side - Led 16"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/vertagear/misc/rgb-sl5000-top-kit.png"
+}

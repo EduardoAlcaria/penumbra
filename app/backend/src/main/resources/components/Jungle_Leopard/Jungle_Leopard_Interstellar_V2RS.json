@@ -1,0 +1,24 @@
+{
+    "ProductName": "Jungle Leopard Interstellar V2RS",
+    "DisplayName": "Jungle Leopard Interstellar V2RS - 8 LED",
+    "Brand" : "Jungle Leopard",
+    "Type" : "Fan",
+    "LedCount" : 8,
+    "Width": 3,
+    "Height": 11,
+    "LedMapping" : [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+    "LedCoordinates" : [
+            [2,0],
+        [1,1],
+    [0,2],
+    [0,4],
+    [0,6],
+    [0,8],
+        [1,9],
+            [2,10]
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/jungle-leopard/fans/interstellar-v2rs.png"
+}

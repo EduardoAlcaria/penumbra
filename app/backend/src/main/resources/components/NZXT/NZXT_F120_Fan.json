@@ -1,0 +1,124 @@
+{
+    "ProductName": "NZXT F120 Fan 120mm",
+    "DisplayName": "NZXT F120 Fan 120mm - 18 LED",
+    "Brand": "NZXT",
+    "Type": "Fan",
+    "LedCount": 18,
+    "Width": 19,
+    "Height": 19,
+    "LedMapping": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+    ],
+    "LedCoordinates": [
+        [
+            18,
+            9
+        ],
+        [
+            17,
+            12
+        ],
+        [
+            16,
+            15
+        ],
+        [
+            14,
+            17
+        ],
+        [
+            11,
+            18
+        ],
+        [
+            7,
+            18
+        ],
+        [
+            4,
+            17
+        ],
+        [
+            2,
+            15
+        ],
+        [
+            1,
+            12
+        ],
+        [
+            0,
+            9
+        ],
+        [
+            1,
+            6
+        ],
+        [
+            2,
+            3
+        ],
+        [
+            4,
+            1
+        ],
+        [
+            7,
+            0
+        ],
+        [
+            11,
+            0
+        ],
+        [
+            14,
+            1
+        ],
+        [
+            16,
+            3
+        ],
+        [
+            17,
+            6
+        ]
+    ],
+    "LedNames": [
+        "Led1",
+        "Led2",
+        "Led3",
+        "Led4",
+        "Led5",
+        "Led6",
+        "Led7",
+        "Led8",
+        "Led9",
+        "Led10",
+        "Led11",
+        "Led12",
+        "Led13",
+        "Led14",
+        "Led15",
+        "Led16",
+        "Led17",
+        "Led18"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/nzxt/fans/f-120.png"
+}

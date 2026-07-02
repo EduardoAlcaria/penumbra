@@ -1,0 +1,136 @@
+{
+  "ProductName": "Antec Neo Prizm 140",
+  "DisplayName": "Antec Neo Prizm 140 - 20 LED",
+  "Brand": "Antec",
+  "Type": "Fan",
+  "LedCount": 20,
+  "Width": 10,
+  "Height": 10,
+  "LedMapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "LedCoordinates": [
+    [
+      6,
+      1
+    ],
+    [
+      5,
+      0
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      3,
+      1
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      0,
+      5
+    ],
+    [
+      1,
+      6
+    ],
+    [
+      2,
+      7
+    ],
+    [
+      3,
+      8
+    ],
+    [
+      4,
+      9
+    ],
+    [
+      5,
+      9
+    ],
+    [
+      6,
+      8
+    ],
+    [
+      7,
+      7
+    ],
+    [
+      8,
+      6
+    ],
+    [
+      9,
+      5
+    ],
+    [
+      9,
+      4
+    ],
+    [
+      8,
+      3
+    ],
+    [
+      7,
+      2
+    ]
+  ],
+  "LedNames": [
+    "Led1",
+    "Led2",
+    "Led3",
+    "Led4",
+    "Led5",
+    "Led6",
+    "Led7",
+    "Led8",
+    "Led9",
+    "Led10",
+    "Led11",
+    "Led12",
+    "Led13",
+    "Led14",
+    "Led15",
+    "Led16",
+    "Led17",
+    "Led18",
+    "Led19",
+    "Led20"
+  ],
+  "ImageUrl":"https://assets.signalrgb.com/devices/brands/antec/fans/prizm-t3-120.png"
+}

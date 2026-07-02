@@ -1,0 +1,31 @@
+{
+    "ProductName": "DeepCool CF120 Plus",
+    "DisplayName": "DeepCool CF120 Plus - 18 LED",
+    "Brand" : "DeepCool",
+    "Type" : "Fan",
+    "LedCount" : 18,
+    "Width": 6,
+    "Height": 7,
+    "LedMapping" : [
+        9,10,
+    8,          11,
+7,      0,5,        12,
+     1,     4,
+6,     2, 3,        13,
+    17,         14,
+        16,15
+],
+"LedCoordinates" : [
+        [2,0],[3,0],
+    [1,1],          [4,1],
+[0,2],  [2,2],[3,2],    [5,2],
+    [1,3],          [4,3],
+[0,4],  [2,4],[3,4],    [5,4],
+    [1,5],          [4,5],
+        [2,6],[3,6]
+],
+"LedNames" : [
+    "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11","Led 12","Led 13","Led 14","Led 15","Led 16","Led 17","Led 18"
+],
+"ImageUrl":"https://assets.signalrgb.com/devices/brands/deepcool/fans/cf120-plus.png"
+}

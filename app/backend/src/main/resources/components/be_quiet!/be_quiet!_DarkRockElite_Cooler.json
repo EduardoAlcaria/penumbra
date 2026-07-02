@@ -1,0 +1,30 @@
+{
+    "ProductName": "be quiet! Dark Rock Elite Cooler",
+    "DisplayName": "be quiet! Dark Rock Elite Cooler - 12 LED",
+    "Brand" : "be quiet!",
+    "Type" : "Cooler",
+    "LedCount" : 12,
+    "Width": 4,
+    "Height": 6,
+    "LedMapping" : [
+		0, 1,
+	2,			3,
+    4,			5,
+    6,			7,
+    8,			9,
+		10,  11
+		],
+    "LedCoordinates" : [
+								[1,0],	[2,0],
+						[0,1],					[3,0],
+						[0,2],					[3,1],
+						[0,3],					[3,2],
+						[0,4],					[3,3],
+								[1,5],	[2,5]
+                
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11","Led 12"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/be-quiet!/heatsink/dark-rock-elite.png"
+}

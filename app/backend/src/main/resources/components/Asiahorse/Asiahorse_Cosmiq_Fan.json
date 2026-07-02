@@ -1,0 +1,23 @@
+{
+ "ProductName": "Asiahorse Cosmiq",
+ "DisplayName": "Cosmiq",
+ "Brand": "Asiahorse",
+ "Type": "Fan",
+ "LedCount": 8,
+ "Width": 6,
+ "Height": 3,
+ "LedMapping" : [
+    0,          7,
+    1,          6,
+       2,3,4,5
+    ],
+ "LedCoordinates": [
+  [0,0],                  [5,0],
+  [0,1],                  [5,1],
+    [1,2],[2,2],[3,2],[4,2]
+ ],
+ "LedNames" : [
+    "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8"
+],
+"ImageUrl":"https://assets.signalrgb.com/devices/brands/asiahorse/fans/cosmiq.png"
+}

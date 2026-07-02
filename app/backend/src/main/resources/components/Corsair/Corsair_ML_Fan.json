@@ -1,0 +1,23 @@
+{
+    "ProductName": "Corsair ML Fan",
+    "DisplayName": "Corsair ML Fan - 4 LED",
+    "Brand" : "Corsair",
+    "Type" : "Fan",
+    "LedCount" : 4,
+    "Width": 3,
+    "Height": 3,
+    "LedMapping" : [
+        0,
+     3,  1,
+        2
+    ],
+    "LedCoordinates" : [
+        [1,0], 
+    [0,1],      [2,1], 
+        [1,2]
+    ],
+    "LedNames" : [
+        "Led 1", "Led 2", "Led 3", "Led 4"
+    ],
+    "ImageUrl": "https://assets.signalrgb.com/devices/brands/corsair/fans/ml.png"
+}

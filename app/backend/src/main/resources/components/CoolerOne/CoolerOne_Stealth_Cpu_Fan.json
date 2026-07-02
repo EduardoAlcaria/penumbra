@@ -1,0 +1,25 @@
+{
+    "ProductName": "CoolerOne Stealth Cpu Fan",
+    "DisplayName": "CoolerOne Stealth Cpu Fan - 8 LED",
+    "Brand" : "CoolerOne",
+    "Type" : "Fan",
+    "LedCount" : 8,
+    "Width": 4,
+    "Height": 4,
+    "LedMapping" : [
+        0,  7,
+        1,          6,
+        2,          5,
+            3,  4
+        ],
+    "LedCoordinates" : [
+        [1,0], [2,0],
+        [0,1],       [3,1],
+        [0,2],       [3,2],
+            [1,3],  [2,3]
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/coolerone/other/stealth-cooler.png"
+}

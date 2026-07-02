@@ -1,0 +1,38 @@
+{
+  "ProductName": "Nollie GC120",
+  "DisplayName": "Nollie GC120 - 26 LED",
+  "Brand": "Nollie",
+  "Type": "Fan",
+  "LedCount": 26,
+  "Width": 10,
+  "Height": 10,
+  "LedMapping": [
+            25,                 16, 
+          24,                     15, 
+        23,                         14,
+        22,         3,4,            13,
+        21,     2,          5,      12,
+                1,          6,          
+        20,         0,7,            11,
+        19,                        10, 
+          18,                    9, 
+            17,                8
+  ],
+  "LedCoordinates": [
+            [2,0],                 [7,0], 
+          [1,1],                     [8,1], 
+        [0,2],                         [9,2],
+        [0,3],       [4,3],[5,3],      [9,3],
+        [0,4],  [3,4],          [6,4], [9,4],
+                [3,5],          [6,5],
+        [0,6],       [4,6],[5,6],     [9,6],
+        [0,7],                        [9,7], 
+          [1,8],                    [8,8], 
+            [2,9],                [7,9]
+  ],
+  "LedNames": [
+    "Led1", "Led2", "Led3", "Led4", "Led5", "Led6", "Led7", "Led8", "Led9", "Led10",
+    "Led11", "Led12", "Led13", "Led14", "Led15", "Led16", "Led17", "Led18", "Led19", "Led20", "Led21", "Led22", "Led23", "Led24", "Led25", "Led26"
+  ],
+  "ImageUrl":"https://assets.signalrgb.com/devices/brands/nollie/fans/gc120.png"
+}

@@ -1,0 +1,45 @@
+{
+    "ProductName": "ARCTIC Freezer 36 A-RGB",
+    "DisplayName": "ARCTIC Freezer 36 A-RGB",
+    "Brand": "ARCTIC",
+    "Type": "Cooler",
+    "LedCount": 24,
+    "Width": 7,
+    "Height": 7,
+    "LedMapping": [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,
+        12,13,14,15,16,17,18,19,20,21,22,23
+    ],
+    "LedCoordinates": 
+    [ 
+      [1,2], [2,0], [3,0], [4,1], [5,2], [6,3], [5,4], [4,5], [3,6], [2,5], [1,4], [0,3],
+      [1,2], [2,0], [3,0], [4,1], [5,2], [6,3], [5,4], [4,5], [3,6], [2,5], [1,4], [0,3]
+    ],
+    "LedNames": [
+        "Led1",
+        "Led2",
+        "Led3",
+        "Led4",
+        "Led5",
+        "Led6",
+        "Led7",
+        "Led8",
+        "Led9",
+        "Led10",
+        "Led11",
+        "Led12",
+        "Led13",
+        "Led14",
+        "Led15",
+        "Led16",
+        "Led17",
+        "Led18",
+        "Led19",
+        "Led20",
+        "Led21",
+        "Led22",
+        "Led23",
+        "Led24"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/arctic/heatsink/freezer-36.png"
+}

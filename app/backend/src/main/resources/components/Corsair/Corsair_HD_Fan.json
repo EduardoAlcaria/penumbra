@@ -1,0 +1,29 @@
+{
+    "ProductName": "Corsair HD Fan",
+    "DisplayName": "Corsair HD Fan - 12 LED",
+    "Brand" : "Corsair",
+    "Type" : "Fan",
+    "LedCount" : 12,
+    "Width": 6,
+    "Height": 6,
+    "LedMapping" : [
+        3,1,
+        5,   0,
+        7,     2,
+        9,      4,
+        11,     6,
+        10, 8
+    ],
+    "LedCoordinates" : [
+        [2,0],[3,0],
+        [1,1],			[4,1],
+    [0,2],					[5,2],
+    [0,3],					[5,3],
+        [1,4],			[4,4],
+            [2,5],[3,5]
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11","Led 12"
+    ],
+    "ImageUrl": "https://assets.signalrgb.com/devices/brands/corsair/fans/hd.png"
+}

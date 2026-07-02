@@ -1,0 +1,25 @@
+{
+    "ProductName": "be quiet! Pure Loop 2",
+    "DisplayName": "be quiet! Pure Loop 2 - 10 LED",
+    "Brand" : "be quiet!",
+    "Type" : "AIO",
+    "LedCount" : 10,
+    "Width": 3,
+    "Height": 4,
+    "LedMapping" : [
+       6,7,8,
+    5,         9,
+    4,         0,
+       3,2,1
+        ],
+    "LedCoordinates" : [
+    [0,0], [1,0], [2,0],
+    [0,1],        [2,1],
+    [0,2],        [2,2],
+    [0,3], [1,3], [2,3]
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9", "Led 10"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/be-quiet!/aios/pure-loop-2.png"
+}

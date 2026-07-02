@@ -1,0 +1,25 @@
+{
+    "ProductName": "ThermalTake TT1225 Fan",
+    "DisplayName": "ThermalTake TT1225 Fan - 9 LED",
+    "Brand" : "ThermalTake",
+    "Type" : "Fan",
+    "LedCount" : 9,
+    "Width": 5,
+    "Height": 5,
+    "LedMapping" : [
+        4,5,
+        3,      6,
+        2,      7,
+         1, 0, 8
+        ],
+    "LedCoordinates" : [
+        [2,0],[3,0],
+        [1,1],          [4,1],
+        [0,2],          [4,2],
+        [1,3], [2,4],[3,3]
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/thermaltake/fans/tt1225.png"
+}

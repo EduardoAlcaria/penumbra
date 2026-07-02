@@ -1,0 +1,64 @@
+{
+    "ProductName": "DeepCool ST500 ARGB",
+    "DisplayName": "DeepCool ST500 ARGB - 8 LED",
+    "Brand": "DeepCool",
+    "Type": "Strip",
+    "LedCount": 8,
+    "Width": 8,
+    "Height": 1,
+    "LedMapping": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+    ],
+    "LedCoordinates": [
+        [
+            0,
+            0
+        ],
+        [
+            1,
+            0
+        ],
+        [
+            2,
+            0
+        ],
+        [
+            3,
+            0
+        ],
+        [
+            4,
+            0
+        ],
+        [
+            5,
+            0
+        ],
+        [
+            6,
+            0
+        ],
+        [
+            7,
+            0
+        ]
+    ],
+    "LedNames": [
+        "Led1",
+        "Led2",
+        "Led3",
+        "Led4",
+        "Led5",
+        "Led6",
+        "Led7",
+        "Led8"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/deepcool/misc/st500.png"
+}

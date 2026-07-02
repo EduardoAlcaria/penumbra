@@ -1,0 +1,47 @@
+{
+    "ProductName": "Phantek D30-120",
+    "DisplayName": "Phantek D30-120 - 15 LED",
+    "Brand": "Phanteks",
+    "Type": "Fan",
+    "LedCount": 15,
+    "Width": 3,
+    "Height": 15,
+    "LedMapping": [
+            0,
+        1,
+        2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+        12,
+        13,
+            14
+    ],
+    "LedCoordinates": [
+            [2,0],
+        [1,1],
+        [1,2],
+    [0,3],
+    [0,4],
+    [0,5],
+    [0,6],
+    [0,7],
+    [0,8],
+    [0,9],
+    [0,10],
+    [0,11],
+        [1,12],
+        [1,13],
+            [2,14]
+    ],
+    "LedNames": [
+        "Led1", "Led2", "Led3", "Led4", "Led5", "Led6", "Led7", "Led8", "Led9", "Led10", "Led11", "Led12", "Led13", "Led14", "Led15"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/phanteks/fans/d30-120.png"
+}

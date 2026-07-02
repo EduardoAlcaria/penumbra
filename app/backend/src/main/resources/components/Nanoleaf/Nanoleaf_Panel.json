@@ -1,0 +1,13 @@
+{
+    "ProductName": "Nanoleaf Panel",
+    "DisplayName": "Nanoleaf Panel - 1 LED",
+    "Brand": "Nanoleaf",
+    "Type": "custom",
+    "LedCount": 1,
+    "Width": 1,
+    "Height": 1,
+    "LedMapping": [ 0 ],
+    "LedCoordinates": [ [ 0, 0 ] ],
+    "LedNames": [ "Panel" ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/nanoleaf/misc/triangle.png"
+}

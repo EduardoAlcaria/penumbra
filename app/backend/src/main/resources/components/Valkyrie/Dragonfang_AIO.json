@@ -1,0 +1,76 @@
+{
+    "ProductName": "Dragonfang AIO",
+    "DisplayName": "Dragonfang AIO - 10 LED",
+    "Brand": "Valkyrie",
+    "Type": "AIO",
+    "LedCount": 10,
+    "Width": 11,
+    "Height": 11,
+    "LedMapping": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
+    "LedCoordinates": [
+        [
+            10,
+            5
+        ],
+        [
+            9,
+            8
+        ],
+        [
+            7,
+            10
+        ],
+        [
+            3,
+            10
+        ],
+        [
+            1,
+            8
+        ],
+        [
+            0,
+            5
+        ],
+        [
+            1,
+            2
+        ],
+        [
+            3,
+            0
+        ],
+        [
+            7,
+            0
+        ],
+        [
+            9,
+            2
+        ]
+    ],
+    "LedNames": [
+        "Led1",
+        "Led2",
+        "Led3",
+        "Led4",
+        "Led5",
+        "Led6",
+        "Led7",
+        "Led8",
+        "Led9",
+        "Led10"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/valkyrie/aios/dragonfang.png"
+}

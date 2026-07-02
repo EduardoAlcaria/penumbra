@@ -1,0 +1,124 @@
+{
+  "ProductName": "Thermaltake Riing Duo 12 Fan",
+  "DisplayName": "Thermaltake Riing Duo 12 Fan - 18 LED",
+  "Brand": "ThermalTake",
+  "Type": "Fan",
+  "LedCount": 18,
+  "Width": 13,
+  "Height": 13,
+  "LedMapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "LedCoordinates": [
+    [
+      9,
+      1
+    ],
+    [
+      6,
+      0
+    ],
+    [
+      3,
+      1
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      0,
+      6
+    ],
+    [
+      1,
+      9
+    ],
+    [
+      3,
+      11
+    ],
+    [
+      6,
+      12
+    ],
+    [
+      9,
+      11
+    ],
+    [
+      11,
+      9
+    ],
+    [
+      12,
+      6
+    ],
+    [
+      11,
+      3
+    ],
+    [
+      4,
+      7
+    ],
+    [
+      6,
+      8
+    ],
+    [
+      8,
+      7
+    ],
+    [
+      8,
+      5
+    ],
+    [
+      6,
+      4
+    ],
+    [
+      4,
+      5
+    ]
+  ],
+  "LedNames": [
+    "Led1",
+    "Led2",
+    "Led3",
+    "Led4",
+    "Led5",
+    "Led6",
+    "Led7",
+    "Led8",
+    "Led9",
+    "Led10",
+    "Led11",
+    "Led12",
+    "Led13",
+    "Led14",
+    "Led15",
+    "Led16",
+    "Led17",
+    "Led18"
+  ],
+  "ImageUrl":"https://assets.signalrgb.com/devices/brands/thermaltake/fans/riing-duo.png"
+}

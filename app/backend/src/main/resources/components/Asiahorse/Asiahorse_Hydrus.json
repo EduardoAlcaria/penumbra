@@ -1,0 +1,19 @@
+{
+    "ProductName": "Asiahorse Hydrus",
+    "DisplayName": "Asiahorse Hydrus",
+    "Brand": "Asiahorse",
+    "Type": "Cable",
+    "LedCount": 6,
+    "Width": 1,
+    "Height": 6,
+    "LedMapping" : [
+       0, 1, 2, 3, 4, 5
+       ],
+    "LedCoordinates": [
+     [0,0], [0,1], [0,2], [0,3], [0,4], [0,5]
+    ],
+    "LedNames" : [
+       "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6"
+   ],
+   "ImageUrl":"https://assets.signalrgb.com/devices/brands/asiahorse/misc/hydrus-cable.png"
+   }

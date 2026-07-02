@@ -1,0 +1,25 @@
+{
+    "ProductName": "Corsair XD5 Reservior",
+    "DisplayName": "XD5 Reservior - 10 Led",
+    "Brand" : "Corsair",
+    "Type" : "Water Block",
+    "LedCount" : 10,
+    "Width": 4,
+    "Height": 4,
+    "LedMapping" : [
+        0,1,2,
+        9,    3,
+        8,    4, 
+         7,6,5  
+    ],
+    "LedCoordinates" : [
+        [0,0],[1,0],[3,0],
+        [0,1],       [3,1],
+        [0,2],       [3,2],
+        [0,3],[1,3],[3,3]
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10"
+    ],
+    "ImageUrl": "https://assets.signalrgb.com/devices/brands/corsair/misc/xd5-reservoir.png"
+}

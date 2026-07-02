@@ -1,0 +1,20 @@
+{
+  "ProductName": "Corsair LINK 9000D Logo",
+  "DisplayName": "Corsair LINK 9000D Logo - 4 LED",
+  "Brand" : "Corsair",
+  "Type" : "Strip",
+  "LedCount" : 4,
+  "Width": 2,
+  "Height": 2,
+  "LedMapping" : [
+    0,2,3,1
+  ],
+  "LedCoordinates" : [
+    [0,0],[1,0],
+    [0,1],[1,1]
+  ],
+  "LedNames" : [
+    "Led 1","Led 2","Led 3","Led 4"
+  ],
+  "ImageUrl": "https://assets.signalrgb.com/devices/brands/corsair/misc/link-9000d-logo.png"
+}

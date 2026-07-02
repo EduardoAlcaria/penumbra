@@ -1,0 +1,33 @@
+{
+  "ProductName": "Aerocool Duo 12",
+  "DisplayName": "Aerocool Duo 12 - 16 LED",
+  "Brand" : "Aerocool",
+  "Type" : "Fan",
+  "LedCount" : 16,
+  "Width": 8,
+  "Height": 8,
+  "LedMapping" : [
+          12,13,
+        11,   14,
+      10,       15,
+    9,            0,
+    8,            1,
+      7,        2,                        
+        6,    3,
+          5,4
+    ],
+"LedCoordinates" : [
+        [3,0],[4,0],
+      [2,1],    [5,1],
+    [1,2],        [6,2],
+  [0,3],            [7,3],
+  [0,4],            [7,4],
+    [1,5],        [6,5],
+      [2,6],    [5,6],
+        [3,7],[4,7]
+],
+"LedNames" : [
+    "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11","Led 12","Led 13","Led 14","Led 15","Led 16"
+],
+  "ImageUrl":"https://assets.signalrgb.com/devices/brands/aerocool/fan/duo-12.png"
+}

@@ -1,0 +1,23 @@
+{
+    "ProductName": "Asiahorse Nyota Ultra",
+    "DisplayName": "Asiahorse Nyota Ultra",
+    "Brand": "Asiahorse",
+    "Type": "Fan",
+    "LedCount": 9,
+    "Width": 9,
+    "Height": 3,
+    "LedMapping" : [
+       0,           8,
+       1,           7,
+          2,3,4,5,6
+       ],
+    "LedCoordinates": [
+     [0,0],                                        [8,0],
+         [1,1],                              [7,1],
+               [2,2],[3,2],[4,2],[5,2],[6,2]
+    ],
+    "LedNames" : [
+       "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8", "Led 9"
+   ],
+   "ImageUrl":"https://assets.signalrgb.com/devices/brands/asiahorse/fans/nyota-ultra.png"
+   }

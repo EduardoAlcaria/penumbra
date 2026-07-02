@@ -1,0 +1,23 @@
+{
+    "ProductName": "Jupiter AJ120 Fan",
+    "DisplayName": "Jupiter AJ120 Fan - 6 LED",
+    "Brand" : "Jupiter",
+    "Type" : "Fan",
+    "LedCount" : 6,
+    "Width": 5,
+    "Height": 5,
+    "LedMapping" : [
+        4,3,
+        5,   2,
+         0, 1
+        ],
+    "LedCoordinates" : [
+        [1,0],[3,0],
+    [0,2],      [4,2],
+        [1,4],[3,4]
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/jupiter/fans/aj-120.png"
+}

@@ -1,0 +1,22 @@
+{
+    "ProductName": "DeepCool AK620 Heatsink",
+    "DisplayName": "DeepCool AK620 Heatsink - 22 LED",
+    "Brand": "DeepCool",
+    "Type": "Heatsink",
+    "LedCount": 22,
+    "Width": 11,
+    "Height": 10,
+    "LedMapping": [
+        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
+    ],
+    "LedCoordinates": [
+        [ 0, 0], [ 1, 0], [ 2, 0], [ 3, 0], [ 4, 0], [ 5, 0], [ 6, 0], [ 7, 0], [ 8, 0], [ 9, 0], [ 10, 0],
+        [ 0, 9], [ 1, 9], [ 2, 9], [ 3, 9], [ 4, 9], [ 5, 9], [ 6, 9], [ 7, 9], [ 8, 9], [ 9, 9], [ 10, 9]
+    ],
+    "LedNames": [
+        "LED 1", "LED 2", "LED 3", "LED 4", "LED 5", "LED 6", "LED 7", "LED 8", "LED 9", "LED 10", "LED 11",
+        "LED 12", "LED 13", "LED 14", "LED 15", "LED 16", "LED 17", "LED 18", "LED 19", "LED 20", "LED 21", "LED 22"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/deepcool/heatsink/ak620.png"
+}

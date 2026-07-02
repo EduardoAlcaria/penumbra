@@ -1,0 +1,64 @@
+{
+    "ProductName": "DeepCool AS500 Heatsink",
+    "DisplayName": "DeepCool AS500 Heatsink - 8 LED",
+    "Brand": "DeepCool",
+    "Type": "Heatsink",
+    "LedCount": 8,
+    "Width": 1,
+    "Height": 8,
+    "LedMapping": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+    ],
+    "LedCoordinates": [
+        [
+            0,
+            0
+        ],
+        [
+            0,
+            1
+        ],
+        [
+            0,
+            2
+        ],
+        [
+            0,
+            3
+        ],
+        [
+            0,
+            4
+        ],
+        [
+            0,
+            5
+        ],
+        [
+            0,
+            6
+        ],
+        [
+            0,
+            7
+        ]
+    ],
+    "LedNames": [
+        "Led1",
+        "Led2",
+        "Led3",
+        "Led4",
+        "Led5",
+        "Led6",
+        "Led7",
+        "Led8"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/deepcool/heatsink/as500.png"
+}

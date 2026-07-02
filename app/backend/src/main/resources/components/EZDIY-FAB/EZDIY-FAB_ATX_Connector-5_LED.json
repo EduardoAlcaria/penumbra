@@ -1,0 +1,13 @@
+{
+    "ProductName": "EZDIY-FAB ATX Connector",
+    "DisplayName": "EZDIY-FAB ATX Connector - 5 LED",
+    "Brand": "EZDIY-FAB",
+    "Type": "custom",
+    "LedCount": 5,
+    "Width": 1,
+    "Height": 5,
+    "LedMapping": [0,1,2,3,4],
+    "LedCoordinates": [[0,4],[0,3],[0,2],[0,1],[0,0]],
+    "LedNames": ["Led1","Led2","Led3","Led4","Led5"],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/ezdiy-fab/misc/atx-connector.png"
+}

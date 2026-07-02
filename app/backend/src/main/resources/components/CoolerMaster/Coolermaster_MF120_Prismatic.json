@@ -1,0 +1,142 @@
+{
+    "ProductName": "CoolerMaster Master Fan MF120 Prismatic",
+    "DisplayName": "CoolerMaster Master Fan MF120 Prismatic - 30 LED",
+    "Brand": "CoolerMaster",
+    "Type": "Fan",
+    "LedCount": 30,
+    "Width": 25,
+    "Height": 25,
+    "LedMapping": [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+        24, 25, 26, 27, 28, 29
+    ],
+    "LedCoordinates": [
+        [
+            24,
+            12
+        ],
+        [
+            24,
+            15
+        ],
+        [
+            22,
+            18
+        ],
+        [
+            20,
+            20
+        ],
+        [
+            18,
+            22
+        ],
+        [
+            15,
+            24
+        ],
+        [
+            12,
+            24
+        ],
+        [
+            9,
+            24
+        ],
+        [
+            6,
+            22
+        ],
+        [
+            4,
+            20
+        ],
+        [
+            2,
+            18
+        ],
+        [
+            0,
+            15
+        ],
+        [
+            0,
+            12
+        ],
+        [
+            0,
+            9
+        ],
+        [
+            2,
+            6
+        ],
+        [
+            4,
+            4
+        ],
+        [
+            6,
+            2
+        ],
+        [
+            9,
+            0
+        ],
+        [
+            12,
+            0
+        ],
+        [
+            15,
+            0
+        ],
+        [
+            18,
+            2
+        ],
+        [
+            20,
+            4
+        ],
+        [
+            22,
+            6
+        ],
+        [
+            24,
+            9
+        ],
+        [
+            15,
+            12
+        ],
+        [
+            14,
+            15
+        ],
+        [
+            11,
+            15
+        ],
+        [
+            9,
+            12
+        ],
+        [
+            11,
+            9
+        ],
+        [
+            14,
+            9
+        ]
+    ],
+    "LedNames": [
+        "Front Ring Led 1", "Front Ring Led 2", "Front Ring Led 3", "Front Ring Led 4", "Front Ring Led 5", "Front Ring Led 6", "Front Ring Led 7", "Front Ring Led 8", "Front Ring Led 9", "Front Ring Led 10", "Front Ring Led 11", "Front Ring Led 12",
+        "Back Ring Led 1", "Back Ring Led 2", "Back Ring Led 3", "Back Ring Led 4", "Back Ring Led 5", "Back Ring Led 6", "Back Ring Led 7", "Back Ring Led 8", "Back Ring Led 9", "Back Ring Led 10", "Back Ring Led 11", "Back Ring Led 12",
+        "Fan Led 1", "Fan Led 2", "Fan Led 3", "Fan Led 4", "Fan Led 5", "Fan Led 6"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/coolermaster/fans/mf-120-prismatic.png"
+}

@@ -1,0 +1,52 @@
+{
+    "ProductName": "Fractal Design Aspect 12 RGB",
+    "DisplayName": "Fractal Design Aspect 12 RGB - 6 LED",
+    "Brand": "Fractal Design",
+    "Type": "Fan",
+    "LedCount": 6,
+    "Width": 7,
+    "Height": 7,
+    "LedMapping": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+    ],
+    "LedCoordinates": [
+        [
+            6,
+            3
+        ],
+        [
+            5,
+            6
+        ],
+        [
+            1,
+            6
+        ],
+        [
+            0,
+            3
+        ],
+        [
+            1,
+            0
+        ],
+        [
+            5,
+            0
+        ]
+    ],
+    "LedNames": [
+        "Led1",
+        "Led2",
+        "Led3",
+        "Led4",
+        "Led5",
+        "Led6"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/fractal/fans/aspect-12-rgb.png"
+}

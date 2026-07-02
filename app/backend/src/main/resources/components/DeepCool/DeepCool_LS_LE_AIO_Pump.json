@@ -1,0 +1,42 @@
+{
+    "ProductName": "DeepCool LS LE AIO Pump",
+    "DisplayName": "DeepCool LS LE AIO Pump - 16 LED",
+    "Brand": "DeepCool",
+    "Type": "AIO",
+    "LedCount": 16,
+    "Width": 5,
+    "Height": 5,
+    "LedMapping": [
+        7, 8, 9, 10,11,
+        6,          12,
+        5,          13,
+        4,          14,
+        3, 2, 1, 0, 15
+    ],
+    "LedCoordinates": [
+        [0,0],[1,0],[2,0],[3,0],[4,0],
+        [0,1],                  [4,1],
+        [0,2],                  [4,2],
+        [0,3],                  [4,3],
+        [0,4],[1,4],[2,4],[3,4],[4,4]
+    ],
+    "LedNames": [
+        "Top Left - Corner",
+        "Top - Left",
+        "Top - Middle",
+        "Top - Right",
+        "Top Right - Corner",
+        "Left - Top",
+        "Right - Top",
+        "Left - Middle",
+        "Right - Middle",
+        "Left - Bottom",
+        "Right Bottom",
+        "Bottom Left - Corner",
+        "Bottom - Left",
+        "Bottom - Middle",
+        "Bottom - Right",
+        "Bottom Right - Corner"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/deepcool/aios/ls-le.png"
+}

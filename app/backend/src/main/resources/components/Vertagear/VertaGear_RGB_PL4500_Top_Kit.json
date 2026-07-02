@@ -1,0 +1,19 @@
+{
+    "ProductName": "Vertagear PL4500 RGB Top Kit (Chair Front and Back)",
+    "DisplayName": "Vertagear PL4500 RGB Top Kit (Chair Front and Back) - 5 Zone",
+    "Brand" : "Vertagear",
+    "Type" : "Chair",
+    "LedCount" : 5,
+    "Width": 3,
+    "Height": 2,
+    "LedMapping" : [
+        0,1,2,3,4
+        ],
+    "LedCoordinates" : [
+        [0,0], [0,1], [1,0], [2,0], [2,1]
+    ],
+    "LedNames" : [
+        "Back Side - Top","Back Side - Bottom","Center Acrylic","Front Side - Top", "Front Side - Bottom"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/vertagear/misc/rgb-pl4500-top-kit.png"
+}

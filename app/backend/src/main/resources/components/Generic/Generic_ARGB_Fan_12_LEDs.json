@@ -1,0 +1,27 @@
+{
+    "ProductName": "Generic ARGB Fan 12 LEDs",
+    "DisplayName": "Generic ARGB Fan - 12 LEDs",
+    "Brand" : "Generic",
+    "Type" : "Fan",
+    "LedCount" : 12,
+    "Width": 5,
+    "Height": 5,
+    "LedMapping" : [
+        0,1,2,
+     11,      3,
+     10,      4,
+      9,      5,
+        8,7,6
+        ],
+    "LedCoordinates" : [
+        [1,0],[2,0],[3,0],
+    [0,1],              [4,1],
+    [0,2],              [4,2],
+    [0,3],              [4,3],
+        [1,4],[2,4],[3,4]
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11","Led 12"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/default/fans/fan.png"
+}

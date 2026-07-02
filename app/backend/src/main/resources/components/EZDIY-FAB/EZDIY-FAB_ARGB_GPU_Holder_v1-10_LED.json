@@ -1,0 +1,13 @@
+{
+    "ProductName": "EZDIY-FAB 10 RGB GPU Holder",
+    "DisplayName": "EZDIY-FAB RGB GPU Holder - 10 LED",
+    "Brand": "EZDIY-FAB",
+    "Type": "custom",
+    "LedCount": 10,
+    "Width": 10,
+    "Height": 1,
+    "LedMapping": [0,1,2,3,4,5,6,7,8,9],
+    "LedCoordinates":[[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0]],
+    "LedNames":["Led1","Led2","Led3","Led4","Led5","Led6","Led7","Led8","Led9","Led10"],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/ezdiy-fab/misc/gpu-bracket-v1.png"
+}

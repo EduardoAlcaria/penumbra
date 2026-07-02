@@ -1,0 +1,70 @@
+{
+    "ProductName": "DeepCool GH-01 A-RGB",
+    "DisplayName": "DeepCool GH-01 A-RGB - 9 LED",
+    "Brand": "DeepCool",
+    "Type": "Strip",
+    "LedCount": 9,
+    "Width": 1,
+    "Height": 9,
+    "LedMapping": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+    ],
+    "LedCoordinates": [
+        [
+            0,
+            8
+        ],
+        [
+            0,
+            7
+        ],
+        [
+            0,
+            6
+        ],
+        [
+            0,
+            5
+        ],
+        [
+            0,
+            4
+        ],
+        [
+            0,
+            3
+        ],
+        [
+            0,
+            2
+        ],
+        [
+            0,
+            1
+        ],
+        [
+            0,
+            0
+        ]
+    ],
+    "LedNames": [
+        "Led1",
+        "Led2",
+        "Led3",
+        "Led4",
+        "Led5",
+        "Led6",
+        "Led7",
+        "Led8",
+        "Led9"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/deepcool/misc/gh-01.png"
+}

@@ -1,0 +1,23 @@
+{
+    "ProductName": "ThermalRight TL-M12-S",
+    "DisplayName": "ThermalRight TL-M12-S",
+    "Brand": "Thermalright",
+    "Type": "Fan",
+    "LedCount": 10,
+    "Width": 10,
+    "Height": 3,
+    "LedMapping" : [
+       0,             9,
+       1,             8,
+          2,3,4,5,6,7
+       ],
+    "LedCoordinates": [
+     [0,0],                                              [9,0],
+         [1,1],                                    [8,1],
+               [2,2],[3,2],[4,2],[5,2],[6,2],[7,2]
+    ],
+    "LedNames" : [
+       "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8", "Led 9", "Led 10"
+   ],
+   "ImageUrl":"https://assets.signalrgb.com/devices/brands/thermalright/fans/tl-m12-s.png"
+   }

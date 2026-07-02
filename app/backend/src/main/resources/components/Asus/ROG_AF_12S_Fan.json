@@ -1,0 +1,27 @@
+{
+    "ProductName": "ASUS ROG AF 12S",
+    "DisplayName": "ASUS ROG AF 12S - 8 LED",
+    "Brand" : "ASUS",
+    "Type" : "Fan",
+    "LedCount" : 8,
+    "Width": 5,
+    "Height": 5,
+    "LedMapping" : [ 
+        0,
+      1,  7,
+    2,      6,
+      3,  5,
+        4
+    ],
+    "LedCoordinates" : [
+             [2,0],
+        [1,1],      [3,1],
+    [0,2],              [4,2],
+        [1,3],      [3,3],
+            [2,4]
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/asus/fans/rog-af-12s.png"
+}

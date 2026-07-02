@@ -1,0 +1,34 @@
+{
+    "ProductName": "CoolerOne 120MM Heatpipe Fan",
+    "DisplayName": "CoolerOne 120MM Heatpipe Fan - 16 LED",
+    "Brand" : "CoolerOne",
+    "Type" : "Fan",
+    "LedCount" : 16,
+    "Width": 8,
+    "Height": 8,
+    "LedMapping" : [
+        12, 11, 10,9,
+        13,           8,
+        14,           7,
+        15,           6,
+        0,            5,
+            1,2,3,4
+        ],
+    "LedCoordinates" : [
+        [2,1],[3,0],[4,0],[5,1],
+        [1,2],                  [6,2],
+        [0,3],                  [7,3],
+        [0,4],                  [7,4],
+        [1,5],                  [6,5],
+          [2,6],[3,7],[4,7],[5,6]
+    ],
+    "LedNames" : [
+        "Led 13","Led 12","Led 11","Led 10",
+        "Led 14","Led 9",
+        "Led 15","Led 8",
+        "Led 16","Led 7",
+        "Led 1","Led 6",
+        "Led 2","Led 3","Led 4","Led 5"    
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/coolerone/other/120mm-tower-cooler-argb.png"
+}

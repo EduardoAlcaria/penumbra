@@ -1,0 +1,32 @@
+{
+    "ProductName": "Corsair LL Fan",
+    "DisplayName": "Corsair LL Fan - 16 LED",
+    "Brand" : "Corsair",
+    "Type" : "Fan",
+    "LedCount" : 16,
+    "Width": 5,
+    "Height": 5,
+    "LedMapping" : [
+        4,      15,   14,    13, 
+        5,          0,        12,
+                1,    3,      11,
+        6,          2,        10,
+            7,     8,     9    
+        ],
+    "LedCoordinates" : [
+        [0,0], [1,0],  [2,0], [3,0],
+        [0,1],      [2,1],         [4,1],     
+                 [1,2],   [3,2],   [4,2],                                      
+        [0,3],       [2,3],        [4,3], 
+            [1,4],  [2,4],    [3,4]  
+    ],
+    "LedNames" : [
+        "Ring Led 1", "Ring Led 2", "Ring Led 3", "Ring Led 4",
+        "Ring Led 5",      "Center Led 1", "Ring Led 6",
+        "Center Led 2","Center Led 3", "Ring Led 7",
+        "Ring Led 8",    "Center Led 4", "Ring Led 9",
+        "Ring Led 10", "Ring Led 11", "Ring Led 12"
+    ],
+    "ImageUrl": "https://assets.signalrgb.com/devices/brands/corsair/fans/ll.png"
+}
+

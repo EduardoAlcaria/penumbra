@@ -1,0 +1,27 @@
+{
+    "ProductName": "Phanteks 120 SK",
+    "DisplayName": "Phanteks 120 SK - 12 LED",
+    "Brand" : "Phanteks",
+    "Type" : "Fan",
+    "LedCount" : 12,
+    "Width": 5,
+    "Height": 5,
+    "LedMapping" : [
+        0,11,10,
+     1,         9,
+     2,         8,
+     3,         7,
+        4,5,6
+        ],
+    "LedCoordinates" : [
+        [1,0],[2,0],[3,0],
+    [0,1],              [4,1],
+    [0,2],              [4,2],
+    [0,3],              [4,3],
+        [1,4],[2,4],[3,4] 
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10","Led 11","Led 12"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/phanteks/fans/120-sk.png"
+}

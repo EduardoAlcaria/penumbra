@@ -1,0 +1,25 @@
+{
+    "ProductName": "CoolerMaster ML240 RGB Pump",
+    "DisplayName": "ML240 RGB Pump - 10 Led",
+    "Brand" : "CoolerMaster",
+    "Type" : "AIO",
+    "LedCount" : 10,
+    "Width": 5,
+    "Height": 4,
+    "LedMapping" : [
+        4,3,2,
+        5,      1,
+        6,      0,
+          7,8,9 
+        ],
+    "LedCoordinates" : [
+        [1,0],[2,0],[3,0],
+        [0,1],           [4,1],
+        [0,2],           [4,2],
+          [1,3],[2,3],[3,3]
+    ],
+    "LedNames" : [
+        "Led 1","Led 2","Led 3","Led 4","Led 5","Led 6","Led 7","Led 8","Led 9","Led 10"
+    ],
+    "ImageUrl":"https://assets.signalrgb.com/devices/brands/coolermaster/aios/ml-rgb.png"
+}
