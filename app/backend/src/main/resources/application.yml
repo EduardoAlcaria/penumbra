@@ -1,0 +1,22 @@
+server:
+  port: 8787          # local only; UI talks to 127.0.0.1:8787
+
+spring:
+  datasource:
+    # file-based H2 -> ./data/penumbra.mv.db  (local, persists between runs)
+    url: jdbc:h2:file:./data/penumbra;AUTO_SERVER=TRUE
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  h2:
+    console:
+      enabled: true   # http://127.0.0.1:8787/h2-console for poking the DB
+
+penumbra:
+  render-fps: 60
+  # where SignalRGB is installed, used ONCE to import passive-gear LED maps
+  signal-components-dir: "C:/Users/Eduardo Alcaria/AppData/Local/VortxEngine/app-2.5.72/Signal-x64/Components"
