@@ -61,8 +61,14 @@ public class DetectedDevice {
             hid.read(reply, 200);
             // ponytail: numbered-report offset may be +1 on some hardware; tune if counts look shifted.
             if ("u16be_per_channel".equals(profile.getAutoDetectReply())) {
+                int max = profile.getMaxLedsPerChannel();
                 for (int i = 0; i < channels; i++) {
-                    counts[i] = ((reply[i * 2] & 0xFF) << 8) | (reply[i * 2 + 1] & 0xFF);
+                    int raw = ((reply[i * 2] & 0xFF) << 8) | (reply[i * 2 + 1] & 0xFF);
+                    // Clamp to the profile ceiling. A garbage read (e.g. 16128) would
+                    // otherwise blow up the render loop until the packet header byte
+                    // (p + ch*6) wraps into a command opcode (0x80/0xFC/0xFE) and
+                    // kicks the controller into bootloader. Never trust the wire count.
+                    counts[i] = Math.max(0, Math.min(raw, max));
                 }
             }
         } catch (Exception e) {
