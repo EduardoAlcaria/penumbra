@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
-import { api, type Device, type EffectRequest } from "./lib/api";
+import { api, type Device, type EffectRequest, type UnsupportedDevice } from "./lib/api";
 
 const EFFECTS: EffectRequest["type"][] = ["rainbow", "static", "breathing"];
 
 export default function App() {
   const [devices, setDevices] = useState<Device[]>([]);
+  const [unsupported, setUnsupported] = useState<UnsupportedDevice[]>([]);
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [effect, setEffect] = useState<EffectRequest["type"]>("rainbow");
   const [color, setColor] = useState("#009bde");
   const [speed, setSpeed] = useState(0.2);
   const [error, setError] = useState<string | null>(null);
 
-  const refresh = () =>
+  const refresh = () => {
     api.devices().then(setDevices).catch((e) => setError(String(e)));
+    api.unsupported().then(setUnsupported).catch(() => {});
+  };
+
+  const warnings = unsupported.filter((u) => !dismissed.has(u.id));
 
   useEffect(() => {
     refresh();
@@ -119,6 +125,46 @@ export default function App() {
           />
         </aside>
       </main>
+
+      {warnings.length > 0 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-xl">
+            <h2 className="text-lg font-bold">Controller detected, not usable yet</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Penumbra recognized {warnings.length === 1 ? "a controller" : "these controllers"} but
+              can't drive {warnings.length === 1 ? "it" : "them"} safely:
+            </p>
+            <ul className="mt-3 space-y-2">
+              {warnings.map((u) => (
+                <li key={u.id} className="rounded-md bg-muted p-3">
+                  <div className="text-sm font-semibold">{u.name} · {u.id}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">{u.reason}</div>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Adding support needs the controller's exact protocol. Report it with the model and the
+              ID above so it can be added.
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <a
+                href="https://github.com/EduardoAlcaria/penumbra/issues/new"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-secondary"
+              >
+                Report controller
+              </a>
+              <button
+                onClick={() => setDismissed((prev) => new Set([...prev, ...warnings.map((u) => u.id)]))}
+                className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm hover:opacity-90"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="fixed bottom-4 right-4 rounded-md bg-destructive text-destructive-foreground px-4 py-2 text-sm">
