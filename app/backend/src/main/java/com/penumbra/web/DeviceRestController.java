@@ -14,7 +14,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = {"http://localhost:5173", "http://127.0.0.1:5173"})  // Vite dev
+@CrossOrigin(origins = "*")  // local-only server (binds 127.0.0.1): Vite dev + Tauri webview
 public class DeviceRestController {
 
     private final DeviceManager deviceManager;
