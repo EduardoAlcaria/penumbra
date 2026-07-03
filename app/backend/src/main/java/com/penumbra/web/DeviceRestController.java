@@ -57,6 +57,15 @@ public class DeviceRestController {
         return devices();
     }
 
+    /** Recognized controllers Penumbra refuses to drive, with a reason for the UI to show. */
+    @GetMapping("/unsupported")
+    public List<Map<String, Object>> unsupported() {
+        return deviceManager.unsupported().stream().map(u -> Map.<String, Object>of(
+                "id", u.id(),
+                "name", u.name(),
+                "reason", u.reason())).toList();
+    }
+
     /** body: {"type":"rainbow","color":"#009bde","speed":0.2,"spread":1.0} */
     @PostMapping("/effect")
     public Map<String, Object> setEffect(@RequestBody EffectRequest req) {
