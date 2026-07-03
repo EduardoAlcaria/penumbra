@@ -16,6 +16,13 @@ export interface EffectRequest {
   spread?: number;
 }
 
+/** A controller detected but not drivable yet — shown to the user as a warning. */
+export interface UnsupportedDevice {
+  id: string;
+  name: string;
+  reason: string;
+}
+
 async function json<T>(res: Response): Promise<T> {
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json() as Promise<T>;
@@ -23,6 +30,7 @@ async function json<T>(res: Response): Promise<T> {
 
 export const api = {
   devices: () => fetch("/api/devices").then(json<Device[]>),
+  unsupported: () => fetch("/api/unsupported").then(json<UnsupportedDevice[]>),
   rescan: () => fetch("/api/rescan", { method: "POST" }).then(json<Device[]>),
   setEffect: (req: EffectRequest) =>
     fetch("/api/effect", {
