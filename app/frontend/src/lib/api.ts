@@ -1,4 +1,7 @@
 // Tiny typed client for the local Penumbra backend.
+// Absolute base: the Tauri window is served from tauri://localhost, so it must
+// reach the Java engine by its real address, not a same-origin relative path.
+const BASE = "http://127.0.0.1:8787";
 
 export interface Device {
   id: string;
@@ -29,11 +32,11 @@ async function json<T>(res: Response): Promise<T> {
 }
 
 export const api = {
-  devices: () => fetch("/api/devices").then(json<Device[]>),
-  unsupported: () => fetch("/api/unsupported").then(json<UnsupportedDevice[]>),
-  rescan: () => fetch("/api/rescan", { method: "POST" }).then(json<Device[]>),
+  devices: () => fetch(`${BASE}/api/devices`).then(json<Device[]>),
+  unsupported: () => fetch(`${BASE}/api/unsupported`).then(json<UnsupportedDevice[]>),
+  rescan: () => fetch(`${BASE}/api/rescan`, { method: "POST" }).then(json<Device[]>),
   setEffect: (req: EffectRequest) =>
-    fetch("/api/effect", {
+    fetch(`${BASE}/api/effect`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(req),
