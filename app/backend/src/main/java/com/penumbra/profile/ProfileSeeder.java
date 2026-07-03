@@ -40,10 +40,12 @@ public class ProfileSeeder implements CommandLineRunner {
     private void seedControllers() {
         // Nollie 8 v2 — the user's controller. Auto-detect: FC 03 -> 8x u16be LEDs/channel.
         controllers.save(nollie("Nollie 8 v2", 0x16D2, 0x1F01, 8));
-        // ponytail: 16/32ch Nollie intentionally NOT seeded. They use a different wire
-        // protocol (OpenRGB's 1025-byte SendPacket, channel in a dedicated byte), NOT this
-        // interval-6 framing — driving them here emits garbage and the header can reach a
-        // command opcode. Add them back only with a real "nollie_big" framing implemented.
+        // 16/32ch are seeded so they are RECOGNIZED (the UI can warn the user), but the
+        // framing guard in DetectedDevice refuses to DRIVE them: they speak OpenRGB's
+        // 1025-byte SendPacket protocol, not this interval-6 framing. They stay disabled
+        // until a real "nollie_big" framing exists.
+        controllers.save(nollie("Nollie 16 v3", 0x3061, 0x4716, 16));
+        controllers.save(nollie("Nollie 32",    0x3061, 0x4714, 32));
         log.info("Seeded {} controller profiles", controllers.count());
     }
 
