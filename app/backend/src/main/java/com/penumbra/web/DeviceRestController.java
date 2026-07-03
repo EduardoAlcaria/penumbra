@@ -3,6 +3,7 @@ package com.penumbra.web;
 import com.penumbra.device.DetectedDevice;
 import com.penumbra.device.DeviceManager;
 import com.penumbra.effect.*;
+import com.penumbra.hid.HidService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,10 +19,24 @@ public class DeviceRestController {
 
     private final DeviceManager deviceManager;
     private final EffectEngine engine;
+    private final HidService hid;
 
-    public DeviceRestController(DeviceManager deviceManager, EffectEngine engine) {
+    public DeviceRestController(DeviceManager deviceManager, EffectEngine engine, HidService hid) {
         this.deviceManager = deviceManager;
         this.engine = engine;
+        this.hid = hid;
+    }
+
+    /** Raw dump of every attached HID device — use it to find an unknown controller's VID/PID. */
+    @GetMapping("/hid/scan")
+    public List<Map<String, Object>> hidScan() {
+        return hid.attachedDevices().stream().map(d -> Map.<String, Object>of(
+                "vid", String.format("0x%04X", d.getVendorId() & 0xFFFF),
+                "pid", String.format("0x%04X", d.getProductId() & 0xFFFF),
+                "product", d.getProduct() == null ? "" : d.getProduct(),
+                "manufacturer", d.getManufacturer() == null ? "" : d.getManufacturer(),
+                "interface", d.getInterfaceNumber(),
+                "usagePage", String.format("0x%04X", d.getUsagePage() & 0xFFFF))).toList();
     }
 
     @GetMapping("/status")
