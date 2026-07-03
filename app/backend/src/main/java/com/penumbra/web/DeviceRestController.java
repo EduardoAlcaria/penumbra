@@ -14,7 +14,14 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")  // local-only server (binds 127.0.0.1): Vite dev + Tauri webview
+// Allow-list only. A wildcard here lets any website the user visits read this
+// local API (HID enumeration, effect control) since it binds 127.0.0.1 that the
+// browser can still reach. Enumerate the Vite dev + Tauri webview origins.
+@CrossOrigin(origins = {
+        "http://localhost:5173", "http://127.0.0.1:5173",   // Vite dev
+        "http://tauri.localhost", "https://tauri.localhost", // Tauri v2 webview (Windows)
+        "tauri://localhost"                                   // Tauri webview (macOS/Linux)
+})
 public class DeviceRestController {
 
     private final DeviceManager deviceManager;
