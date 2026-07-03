@@ -18,6 +18,12 @@ import java.util.Arrays;
 public class DetectedDevice {
     private static final Logger log = LoggerFactory.getLogger(DetectedDevice.class);
 
+    /** Nollie routes a color packet by header byte {@code p + ch*STRIDE}. Must match renderNollie(). */
+    private static final int NOLLIE_CHANNEL_STRIDE = 6;
+    /** Lowest command opcode (0x80 SetMos; 0xFC/0xFE/0xFF above). A data header at/above this
+     *  is read by the controller as a command — that is what kicked it into bootloader. */
+    private static final int LOWEST_COMMAND_OPCODE = 0x80;
+
     private final ControllerProfile profile;
     private final HidDevice hid;
 
@@ -37,6 +43,13 @@ public class DetectedDevice {
 
     /** Open the device and ask the hardware how many LEDs are on each channel. */
     public boolean initialize() {
+        if ("nollie".equals(profile.getFraming()) && !nollieFramingSafe()) {
+            log.error("Refusing {} ({}): its channelCount/maxLedsPerChannel would make the nollie "
+                    + "packet header reach the command-opcode range (>= 0x{}), which can knock the "
+                    + "controller into bootloader. This device needs a different framing.",
+                    profile.getName(), id(), Integer.toHexString(LOWEST_COMMAND_OPCODE));
+            return false;
+        }
         if (!hid.open()) {
             log.warn("Could not open {} ({})", profile.getName(), id());
             return false;
@@ -48,6 +61,20 @@ public class DetectedDevice {
                 profile.getName(), profile.getChannelCount(),
                 Arrays.toString(ledsPerChannel), totalLeds);
         return true;
+    }
+
+    /**
+     * True if the worst-case nollie packet header stays below the command-opcode space.
+     * Header = {@code p + ch*STRIDE}; take the largest channel index and packet index the
+     * profile allows. If that reaches 0x80+, some color packet would be misread as a
+     * command (SetMos / bootloader), so the device must not be driven with this framing.
+     */
+    private boolean nollieFramingSafe() {
+        int perPacket = profile.getMaxLedsPerPacket();
+        if (perPacket <= 0 || profile.getChannelCount() <= 0) return false;
+        int maxPacketsPerCh = (int) Math.ceil(profile.getMaxLedsPerChannel() / (double) perPacket);
+        int worstHeader = (maxPacketsPerCh - 1) + (profile.getChannelCount() - 1) * NOLLIE_CHANNEL_STRIDE;
+        return worstHeader < LOWEST_COMMAND_OPCODE;
     }
 
     /** The "works out of the box" magic: JSON says how to ask, hardware answers. */
@@ -112,7 +139,7 @@ public class DetectedDevice {
                 int chunkStart = p * perPacket * 3;
                 int chunkLen = Math.min(perPacket * 3, grb.length - chunkStart);
                 byte[] msg = new byte[1 + chunkLen];
-                msg[0] = (byte) (p + ch * 6);   // Nollie channel/packet header
+                msg[0] = (byte) (p + ch * NOLLIE_CHANNEL_STRIDE);   // Nollie channel/packet header
                 System.arraycopy(grb, chunkStart, msg, 1, chunkLen);
                 writeReport(msg);
             }
