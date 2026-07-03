@@ -15,6 +15,17 @@
 /app/frontend/dist/
 /app/frontend/*.tsbuildinfo
 
+# Generated frontend bundle served by the jar (built from app/frontend)
+/app/backend/src/main/resources/static/
+
+# Local H2 db when run outside the backend dir (Tauri / raw jar)
+/app/frontend/data/
+*.lock.db
+
+# Tauri / Rust build output
+/app/frontend/src-tauri/target/
+/app/frontend/src-tauri/gen/schemas/
+
 # Editor / OS
 .idea/
 .vscode/
