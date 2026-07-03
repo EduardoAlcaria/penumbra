@@ -41,13 +41,25 @@ public class DetectedDevice {
     public int[] getLedsPerChannel() { return ledsPerChannel; }
     public String id() { return String.format("%04X:%04X", profile.getVendorId(), profile.getProductId()); }
 
+    /**
+     * Null if this device can be driven safely; otherwise a human-readable reason it can't.
+     * The UI shows this so a user with an unsupported controller learns why nothing lights up
+     * instead of staring at an empty device list.
+     */
+    public String unsupportedReason() {
+        if ("nollie".equals(profile.getFraming()) && !nollieFramingSafe()) {
+            return profile.getChannelCount() + "-channel controller uses a wire protocol Penumbra "
+                    + "doesn't drive yet. Driving it with the current framing could push it into "
+                    + "bootloader, so it's disabled for safety.";
+        }
+        return null;
+    }
+
     /** Open the device and ask the hardware how many LEDs are on each channel. */
     public boolean initialize() {
-        if ("nollie".equals(profile.getFraming()) && !nollieFramingSafe()) {
-            log.error("Refusing {} ({}): its channelCount/maxLedsPerChannel would make the nollie "
-                    + "packet header reach the command-opcode range (>= 0x{}), which can knock the "
-                    + "controller into bootloader. This device needs a different framing.",
-                    profile.getName(), id(), Integer.toHexString(LOWEST_COMMAND_OPCODE));
+        String reason = unsupportedReason();
+        if (reason != null) {
+            log.error("Refusing {} ({}): {}", profile.getName(), id(), reason);
             return false;
         }
         if (!hid.open()) {
