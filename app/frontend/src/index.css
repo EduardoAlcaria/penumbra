@@ -107,7 +107,14 @@
   }
   .animate-pulse-slow { animation: pen-pulse 2.4s ease-in-out infinite; }
 
+  /* Splash progress: a bar of light sweeping across a track. */
+  @keyframes pen-sweep {
+    from { left: -34%; }
+    to   { left: 100%; }
+  }
+  .animate-sweep { animation: pen-sweep 1.1s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
   @media (prefers-reduced-motion: reduce) {
-    .animate-rise, .animate-pulse-slow { animation: none; }
+    .animate-rise, .animate-pulse-slow, .animate-sweep { animation: none; }
   }
 }
