@@ -6,8 +6,12 @@ import com.penumbra.effect.*;
 import com.penumbra.hid.HidService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * The whole UI API. Local only. No auth — it binds to 127.0.0.1.
@@ -71,6 +75,20 @@ public class DeviceRestController {
                 "id", u.id(),
                 "name", u.name(),
                 "reason", u.reason())).toList();
+    }
+
+    /**
+     * UI strings for the requested language ("en", "pt", ...). No-fallback control
+     * so an unknown language lands on the English base bundle, not the OS locale.
+     */
+    @GetMapping("/i18n")
+    public Map<String, String> i18n(@RequestParam(name = "lang", required = false) String lang) {
+        Locale locale = (lang == null || lang.isBlank()) ? Locale.getDefault() : Locale.forLanguageTag(lang);
+        ResourceBundle bundle = ResourceBundle.getBundle("i18n.messages", locale,
+                ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES));
+        Map<String, String> out = new LinkedHashMap<>();
+        for (String key : Collections.list(bundle.getKeys())) out.put(key, bundle.getString(key));
+        return out;
     }
 
     /** body: {"type":"rainbow","color":"#009bde","speed":0.2,"spread":1.0} */
