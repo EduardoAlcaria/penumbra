@@ -2,7 +2,7 @@
 
 Working plan for the desktop-app redesign. Decomposed into independent phases;
 build **A first** (it holds everything else). Each phase is its own
-spec → implementation cycle. Status: A approved as the starting point.
+spec → implementation cycle. Status: **A and B done**; next up C (YAML themes).
 
 ## Current state (done)
 
@@ -17,7 +17,7 @@ spec → implementation cycle. Status: A approved as the starting point.
 - Safety: LED count clamped to profile ceiling; framing guard refuses
   controllers whose packet header could hit a command opcode.
 
-## Phase A — App shell (build first)
+## Phase A — App shell (build first) — DONE
 
 Turn the single view into a sidebar-driven multi-screen app.
 
@@ -46,7 +46,13 @@ Turn the single view into a sidebar-driven multi-screen app.
 Files: `App.tsx` -> thin; new `components/Shell.tsx`, `components/Sidebar.tsx`,
 `components/SearchBar.tsx`, `screens/*.tsx`. No backend change.
 
-## Phase B — Config (frontend + backend)
+## Phase B — Config (frontend + backend) — DONE
+
+Shipped: `GET /api/i18n?lang=` (ResourceBundle `i18n/messages*.properties`, en
+base + pt), `I18nProvider`/`useT` with localStorage persistence and boot retry,
+autostart toggle (`tauri-plugin-autostart`), "Open config folder"
+(`open_config_dir` command via `tauri-plugin-opener`, creates the dir first).
+Settings screen is tabbed: General / System / About.
 
 - **i18n (Java ResourceBundle)**: backend `messages_en.properties`,
   `messages_pt.properties`, ... under `resources/i18n/`. Endpoint
@@ -82,9 +88,13 @@ Files: `App.tsx` -> thin; new `components/Shell.tsx`, `components/Sidebar.tsx`,
 ## Open questions to resolve before each phase
 
 - A: exact screen list — is Settings one screen or tabbed sections?
+      it is tabbed
 - B: which languages first (pt + en)? persist language server-side or client-side?
+    client side
 - C: do themes cover only colors, or also layout/animation toggles?
+    same way signal does
 - D: bundle device images, or accept online asset URLs?
+    get the ones from signal
 
 ## How to run while iterating
 
