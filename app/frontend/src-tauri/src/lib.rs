@@ -44,9 +44,27 @@ fn start_engine(app: &tauri::App) -> Option<Child> {
     }
 }
 
+/// Reveal the app's config dir (themes, settings) in the OS file manager,
+/// creating it on first use.
+#[tauri::command]
+fn open_config_dir(app: tauri::AppHandle) -> Result<(), String> {
+    use tauri_plugin_opener::OpenerExt;
+    let dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    app.opener()
+        .open_path(dir.to_string_lossy(), None::<&str>)
+        .map_err(|e| e.to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            None,
+        ))
+        .invoke_handler(tauri::generate_handler![open_config_dir])
         .setup(|app| {
             let child = start_engine(app);
             app.manage(Engine(Mutex::new(child)));
