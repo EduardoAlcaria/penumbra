@@ -1,23 +1,57 @@
-import { useState } from "react";
-import type { Device, UnsupportedDevice } from "@/lib/api";
+import { useEffect, useMemo, useState } from "react";
+import { api, type Component, type Device, type UnsupportedDevice } from "@/lib/api";
 import SearchBar from "@/components/SearchBar";
 import { Card } from "@/components/ui/card";
 import { useT } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
 interface Props {
   devices: Device[];
   unsupported: UnsupportedDevice[];
 }
 
+type Status = "all" | "detected" | "unsupported";
+
+function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider transition-colors",
+        active ? "bg-secondary text-foreground ring-1 ring-primary/50" : "text-muted-foreground hover:text-foreground",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function DevicesScreen({ devices, unsupported }: Props) {
   const { t } = useT();
   const [query, setQuery] = useState("");
+  const [status, setStatus] = useState<Status>("all");
+  const [gearType, setGearType] = useState("all");
+  const [gear, setGear] = useState<Component[]>([]);
+
+  useEffect(() => {
+    api.components().then(setGear).catch(() => {});
+  }, []);
 
   const q = query.trim().toLowerCase();
   const match = (s: string) => s.toLowerCase().includes(q);
-  const visible = devices.filter((d) => match(d.name) || match(d.brand) || match(d.id));
-  const visibleUnsupported = unsupported.filter((u) => match(u.name) || match(u.id));
+  const visible = status === "unsupported" ? [] : devices.filter((d) => match(d.name) || match(d.brand) || match(d.id));
+  const visibleUnsupported =
+    status === "detected" ? [] : unsupported.filter((u) => match(u.name) || match(u.id));
   const totalLeds = devices.reduce((sum, d) => sum + d.totalLeds, 0);
+
+  const gearTypes = useMemo(
+    () => [...new Set(gear.map((g) => g.type).filter(Boolean))].sort(),
+    [gear],
+  );
+  const visibleGear = gear
+    .filter((g) => gearType === "all" || g.type === gearType)
+    .filter((g) => match(g.name) || match(g.brand))
+    .slice(0, 60); // ponytail: cap the grid; add pagination if anyone scrolls past 60
 
   return (
     <div className="space-y-6">
@@ -28,6 +62,14 @@ export default function DevicesScreen({ devices, unsupported }: Props) {
         <span className="shrink-0 font-mono text-xs text-muted-foreground">
           {totalLeds} {t("devices.total")}
         </span>
+      </div>
+
+      <div className="animate-rise flex flex-wrap gap-1">
+        {(["all", "detected", "unsupported"] as Status[]).map((s) => (
+          <Chip key={s} active={status === s} onClick={() => setStatus(s)}>
+            {t(`devices.filter.${s}`)}
+          </Chip>
+        ))}
       </div>
 
       {visible.length === 0 && visibleUnsupported.length === 0 ? (
@@ -101,6 +143,50 @@ export default function DevicesScreen({ devices, unsupported }: Props) {
             </Card>
           ))}
         </div>
+      )}
+
+      {/* Gear library: LED layouts bundled with the app, with SignalRGB photos */}
+      {gear.length > 0 && (
+        <section className="animate-rise" style={{ animationDelay: "0.1s" }}>
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <h2 className="font-mono text-xs uppercase tracking-[0.24em] text-muted-foreground">
+              {t("devices.gear")}
+            </h2>
+            <div className="flex flex-wrap gap-1">
+              <Chip active={gearType === "all"} onClick={() => setGearType("all")}>
+                {t("devices.filter.all")}
+              </Chip>
+              {gearTypes.map((ty) => (
+                <Chip key={ty} active={gearType === ty} onClick={() => setGearType(ty)}>
+                  {ty}
+                </Chip>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {visibleGear.map((g) => (
+              <Card key={`${g.brand}:${g.name}`} className="p-3 transition-transform hover:-translate-y-0.5">
+                {g.imageUrl ? (
+                  <img
+                    src={g.imageUrl}
+                    alt={g.name}
+                    loading="lazy"
+                    className="mb-2 h-20 w-full object-contain"
+                    onError={(e) => ((e.target as HTMLImageElement).style.visibility = "hidden")}
+                  />
+                ) : (
+                  <div className="mb-2 h-20 w-full rounded-md bg-muted/40" />
+                )}
+                <div className="truncate text-xs font-medium" title={g.name}>{g.name}</div>
+                <div className="mt-0.5 flex items-center justify-between font-mono text-[10px] text-muted-foreground">
+                  <span className="truncate">{g.brand}</span>
+                  <span className="shrink-0 tabular-nums">{g.ledCount} {t("devices.leds")}</span>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );
