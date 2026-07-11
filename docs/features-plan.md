@@ -2,7 +2,7 @@
 
 Working plan for the desktop-app redesign. Decomposed into independent phases;
 build **A first** (it holds everything else). Each phase is its own
-spec → implementation cycle. Status: **A and B done**; next up C (YAML themes).
+spec → implementation cycle. Status: **A, B, C and D done.**
 
 ## Current state (done)
 
@@ -65,7 +65,13 @@ Settings screen is tabbed: General / System / About.
 - **Open file location**: `tauri-plugin-opener` (or shell reveal) to open the
   themes/config dir in the OS file manager.
 
-## Phase C — YAML themes
+## Phase C — YAML themes — DONE
+
+Shipped: themes dir = app-config-dir/themes, seeded with ember.yaml +
+aurora.yaml on first use (Rust `list_themes`/`open_themes_dir` commands, no fs
+plugin). Format: flat `css-var: value` YAML subset parsed in `lib/themes.ts`;
+picker in Settings > General; re-read on window focus; choice persists in
+localStorage and restores at boot.
 
 - **Theme dir**: `%APPDATA%/penumbra/themes/*.yaml` (created on first run).
 - **Format**: YAML mapping token→value matching the CSS vars in `index.css`
@@ -76,7 +82,12 @@ Settings screen is tabbed: General / System / About.
 - **Watch (optional)**: re-read on focus, or a Tauri fs watcher for live edits.
 - Ship 2–3 built-in themes as YAML so the format is self-documenting.
 
-## Phase D — Rich devices
+## Phase D — Rich devices — DONE
+
+Shipped: `GET /api/components` (name/brand/type/ledCount/imageUrl from the 209
+bundled profiles, SignalRGB asset URLs per the open-question answer); Devices
+screen gained status chips (all/detected/unsupported) and a gear library grid
+with photos, type filter chips, and the shared search box (capped at 60 cards).
 
 - **Photos**: open question — source of controller/gear images. Options: (1)
   bundle a small set locally (offline, fits the no-cloud ethos), (2) reference
