@@ -4,6 +4,7 @@ import com.penumbra.device.DetectedDevice;
 import com.penumbra.device.DeviceManager;
 import com.penumbra.effect.*;
 import com.penumbra.hid.HidService;
+import com.penumbra.profile.ComponentProfileRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -31,11 +32,14 @@ public class DeviceRestController {
     private final DeviceManager deviceManager;
     private final EffectEngine engine;
     private final HidService hid;
+    private final ComponentProfileRepository components;
 
-    public DeviceRestController(DeviceManager deviceManager, EffectEngine engine, HidService hid) {
+    public DeviceRestController(DeviceManager deviceManager, EffectEngine engine, HidService hid,
+                                ComponentProfileRepository components) {
         this.deviceManager = deviceManager;
         this.engine = engine;
         this.hid = hid;
+        this.components = components;
     }
 
     /** Raw dump of every attached HID device — use it to find an unknown controller's VID/PID. */
@@ -66,6 +70,17 @@ public class DeviceRestController {
     public List<Map<String, Object>> rescan() {
         deviceManager.rescan();
         return devices();
+    }
+
+    /** The bundled gear library (fans/strips distilled from SignalRGB), for the Devices screen. */
+    @GetMapping("/components")
+    public List<Map<String, Object>> components() {
+        return components.findAll().stream().map(c -> Map.<String, Object>of(
+                "name", c.getDisplayName() == null ? String.valueOf(c.getProductName()) : c.getDisplayName(),
+                "brand", c.getBrand() == null ? "" : c.getBrand(),
+                "type", c.getType() == null ? "" : c.getType(),
+                "ledCount", c.getLedCount(),
+                "imageUrl", c.getImageUrl() == null ? "" : c.getImageUrl())).toList();
     }
 
     /** Recognized controllers Penumbra refuses to drive, with a reason for the UI to show. */
