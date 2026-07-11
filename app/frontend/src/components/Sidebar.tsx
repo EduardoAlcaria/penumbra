@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Cpu, RefreshCw, Settings, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
@@ -9,11 +10,17 @@ interface Props {
   screen: Screen;
   setScreen: (screen: Screen) => void;
   deviceCount: number;
-  onRescan: () => void;
+  onRescan: () => Promise<unknown>;
 }
 
 export default function Sidebar({ screen, setScreen, deviceCount, onRescan }: Props) {
   const { t } = useT();
+  const [scanning, setScanning] = useState(false);
+
+  const rescan = () => {
+    setScanning(true);
+    onRescan().finally(() => setScanning(false));
+  };
 
   const items: { id: Screen; label: string; icon: typeof Sparkles }[] = [
     { id: "effects", label: t("nav.effects"), icon: Sparkles },
@@ -64,8 +71,14 @@ export default function Sidebar({ screen, setScreen, deviceCount, onRescan }: Pr
           />
           {deviceCount} {deviceCount === 1 ? t("status.controller.one") : t("status.controller.many")}
         </div>
-        <Button variant="secondary" size="sm" onClick={onRescan} className="justify-start gap-2">
-          <RefreshCw className="h-3.5 w-3.5" />
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={rescan}
+          disabled={scanning}
+          className="justify-start gap-2"
+        >
+          <RefreshCw className={cn("h-3.5 w-3.5", scanning && "animate-spin")} />
           {t("action.rescan")}
         </Button>
         {navButton("settings", t("nav.settings"), Settings)}
