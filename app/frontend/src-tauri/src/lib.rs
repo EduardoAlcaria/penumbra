@@ -62,6 +62,94 @@ fn open_config_dir(app: tauri::AppHandle) -> Result<(), String> {
         .map_err(|e| e.to_string())
 }
 
+/// Starter themes written on first run so the YAML format documents itself.
+const BUILTIN_THEMES: &[(&str, &str)] = &[
+    (
+        "ember.yaml",
+        "# Penumbra theme. Flat map: any CSS variable from the app's :root, without the \"--\".\n\
+         # Values are raw CSS (oklch(), hex, anything). \"name\" is the display name.\n\
+         name: Ember\n\
+         background: oklch(0.15 0.016 45)\n\
+         card: oklch(0.185 0.02 45)\n\
+         popover: oklch(0.185 0.02 45)\n\
+         secondary: oklch(0.225 0.022 45)\n\
+         muted: oklch(0.235 0.022 45)\n\
+         accent: oklch(0.235 0.022 45)\n\
+         border: oklch(0.28 0.025 45)\n\
+         input: oklch(0.28 0.025 45)\n\
+         primary: oklch(0.68 0.19 45)\n\
+         ring: oklch(0.68 0.19 45)\n\
+         glow: oklch(0.68 0.19 45)\n",
+    ),
+    (
+        "aurora.yaml",
+        "name: Aurora\n\
+         background: oklch(0.145 0.016 200)\n\
+         card: oklch(0.185 0.02 200)\n\
+         popover: oklch(0.185 0.02 200)\n\
+         secondary: oklch(0.225 0.022 200)\n\
+         muted: oklch(0.235 0.022 200)\n\
+         accent: oklch(0.235 0.022 200)\n\
+         border: oklch(0.28 0.025 200)\n\
+         input: oklch(0.28 0.025 200)\n\
+         primary: oklch(0.72 0.15 170)\n\
+         ring: oklch(0.72 0.15 170)\n\
+         glow: oklch(0.72 0.15 170)\n",
+    ),
+];
+
+/// The themes dir (inside the app config dir), seeded with the built-ins on first use.
+fn themes_dir(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
+    let dir = app
+        .path()
+        .app_config_dir()
+        .map_err(|e| e.to_string())?
+        .join("themes");
+    if !dir.exists() {
+        std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+        for (name, body) in BUILTIN_THEMES {
+            let _ = std::fs::write(dir.join(name), body);
+        }
+    }
+    Ok(dir)
+}
+
+#[derive(serde::Serialize)]
+struct ThemeFile {
+    file: String,
+    content: String,
+}
+
+/// Every *.yaml/*.yml in the themes dir, raw — the frontend parses and applies.
+#[tauri::command]
+fn list_themes(app: tauri::AppHandle) -> Result<Vec<ThemeFile>, String> {
+    let dir = themes_dir(&app)?;
+    let mut out = Vec::new();
+    for entry in std::fs::read_dir(&dir).map_err(|e| e.to_string())? {
+        let path = entry.map_err(|e| e.to_string())?.path();
+        let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
+        if ext != "yaml" && ext != "yml" {
+            continue;
+        }
+        if let (Some(stem), Ok(content)) = (
+            path.file_stem().and_then(|s| s.to_str()),
+            std::fs::read_to_string(&path),
+        ) {
+            out.push(ThemeFile { file: stem.to_string(), content });
+        }
+    }
+    Ok(out)
+}
+
+#[tauri::command]
+fn open_themes_dir(app: tauri::AppHandle) -> Result<(), String> {
+    use tauri_plugin_opener::OpenerExt;
+    let dir = themes_dir(&app)?;
+    app.opener()
+        .open_path(dir.to_string_lossy(), None::<&str>)
+        .map_err(|e| e.to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -70,7 +158,11 @@ pub fn run() {
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
             None,
         ))
-        .invoke_handler(tauri::generate_handler![open_config_dir])
+        .invoke_handler(tauri::generate_handler![
+            open_config_dir,
+            list_themes,
+            open_themes_dir
+        ])
         .setup(|app| {
             let child = start_engine(app);
             app.manage(Engine(Mutex::new(child)));
