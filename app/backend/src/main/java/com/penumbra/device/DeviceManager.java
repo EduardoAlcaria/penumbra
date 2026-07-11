@@ -3,11 +3,12 @@ package com.penumbra.device;
 import com.penumbra.hid.HidService;
 import com.penumbra.profile.ControllerProfile;
 import com.penumbra.profile.ControllerProfileRepository;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.hid4java.HidDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -41,7 +42,10 @@ public class DeviceManager {
         this.profiles = profiles;
     }
 
-    @PostConstruct
+    // After ApplicationReady so the ProfileSeeder (a CommandLineRunner) has
+    // populated the profile table first — @PostConstruct scanned an empty DB
+    // on first boot and matched nothing.
+    @EventListener(ApplicationReadyEvent.class)
     void init() { rescan(); }
 
     /** Match attached HID devices to known controller profiles. */
