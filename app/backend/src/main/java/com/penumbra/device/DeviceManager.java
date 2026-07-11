@@ -12,8 +12,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -51,9 +53,21 @@ public class DeviceManager {
     /** Match attached HID devices to known controller profiles. */
     public synchronized void rescan() {
         List<UnsupportedDevice> refused = new ArrayList<>();
-        for (HidDevice dev : hidService.attachedDevices()) {
-            String key = String.format("%04X:%04X:%s", dev.getVendorId() & 0xFFFF,
-                    dev.getProductId() & 0xFFFF, dev.getPath());
+        List<HidDevice> attached = hidService.attachedDevices();
+
+        // Prune devices no longer on the bus — unplugged, or re-enumerated with a
+        // new path after a replug. Without this, rescan could only ever add.
+        Set<String> present = new HashSet<>();
+        for (HidDevice dev : attached) present.add(key(dev));
+        active.entrySet().removeIf(e -> {
+            if (present.contains(e.getKey())) return false;
+            log.info("Detached {}", e.getValue().getProfile().getName());
+            e.getValue().shutdown();
+            return true;
+        });
+
+        for (HidDevice dev : attached) {
+            String key = key(dev);
             if (active.containsKey(key)) continue;
 
             profiles.findByVendorIdAndProductId(dev.getVendorId() & 0xFFFF, dev.getProductId() & 0xFFFF)
@@ -61,6 +75,11 @@ public class DeviceManager {
                 .ifPresent(profile -> attach(key, profile, dev, refused));
         }
         this.unsupported = List.copyOf(refused);
+    }
+
+    private static String key(HidDevice dev) {
+        return String.format("%04X:%04X:%s", dev.getVendorId() & 0xFFFF,
+                dev.getProductId() & 0xFFFF, dev.getPath());
     }
 
     private void attach(String key, ControllerProfile profile, HidDevice dev, List<UnsupportedDevice> refused) {
