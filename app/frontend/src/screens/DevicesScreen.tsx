@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Cpu } from "lucide-react";
 import { api, type Component, type Device, type UnsupportedDevice } from "@/lib/api";
 import SearchBar from "@/components/SearchBar";
 import { Card } from "@/components/ui/card";
@@ -102,27 +103,39 @@ export default function DevicesScreen({ devices, unsupported }: Props) {
                   </div>
                 </div>
 
-                <div className="mt-4 space-y-1.5">
-                  {d.ledsPerChannel.map((n, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <span className="w-8 shrink-0 font-mono text-[10px] text-muted-foreground">
-                        ch{i + 1}
-                      </span>
-                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${(n / peak) * 100}%`,
-                            background: "var(--glow)",
-                            opacity: n > 0 ? 0.85 : 0,
-                          }}
-                        />
+                <div className="mt-4 flex gap-4">
+                  <div className="flex-1 space-y-1.5">
+                    {d.ledsPerChannel.map((n, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <span className="w-8 shrink-0 font-mono text-[10px] text-muted-foreground">
+                          ch{i + 1}
+                        </span>
+                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${(n / peak) * 100}%`,
+                              background: "var(--glow)",
+                              opacity: n > 0 ? 0.85 : 0,
+                            }}
+                          />
+                        </div>
+                        <span className="w-7 shrink-0 text-right font-mono text-[10px] tabular-nums text-muted-foreground">
+                          {n}
+                        </span>
                       </div>
-                      <span className="w-7 shrink-0 text-right font-mono text-[10px] tabular-nums text-muted-foreground">
-                        {n}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  {/* Device portrait: the controller lit by its own effect color. */}
+                  <div
+                    className="hidden w-28 shrink-0 items-center justify-center self-stretch rounded-xl ring-1 ring-inset ring-white/10 sm:flex"
+                    style={{
+                      background:
+                        "radial-gradient(70% 70% at 50% 45%, color-mix(in oklab, var(--glow) 30%, transparent), transparent), oklch(0.16 0.014 275)",
+                    }}
+                  >
+                    <Cpu className="h-10 w-10" style={{ color: "var(--glow)" }} />
+                  </div>
                 </div>
               </Card>
             );
