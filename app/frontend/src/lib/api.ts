@@ -26,6 +26,15 @@ export interface UnsupportedDevice {
   reason: string;
 }
 
+/** Bundled gear (fans/strips) with SignalRGB asset photos, for the Devices screen. */
+export interface Component {
+  name: string;
+  brand: string;
+  type: string;
+  ledCount: number;
+  imageUrl: string;
+}
+
 async function json<T>(res: Response): Promise<T> {
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json() as Promise<T>;
@@ -34,6 +43,7 @@ async function json<T>(res: Response): Promise<T> {
 export const api = {
   i18n: (lang: string) => fetch(`${BASE}/api/i18n?lang=${lang}`).then(json<Record<string, string>>),
   devices: () => fetch(`${BASE}/api/devices`).then(json<Device[]>),
+  components: () => fetch(`${BASE}/api/components`).then(json<Component[]>),
   unsupported: () => fetch(`${BASE}/api/unsupported`).then(json<UnsupportedDevice[]>),
   rescan: () => fetch(`${BASE}/api/rescan`, { method: "POST" }).then(json<Device[]>),
   setEffect: (req: EffectRequest) =>
