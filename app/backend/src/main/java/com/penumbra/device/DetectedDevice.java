@@ -113,6 +113,15 @@ public class DetectedDevice {
         } catch (Exception e) {
             log.warn("Auto-detect failed for {}, defaulting to 0 LEDs/channel: {}", id(), e.getMessage());
         }
+        // Some firmwares (Nollie OS 2.1) never answer the count query. Drive the
+        // profile ceiling instead, like OpenRGB's fixed zones — data past the end
+        // of a strip is simply ignored, and the ceiling is what the framing guard
+        // already proved safe.
+        if (Arrays.stream(counts).sum() == 0) {
+            log.info("{}: no LED counts from hardware, defaulting to {} per channel",
+                    profile.getName(), profile.getMaxLedsPerChannel());
+            Arrays.fill(counts, profile.getMaxLedsPerChannel());
+        }
         return counts;
     }
 
