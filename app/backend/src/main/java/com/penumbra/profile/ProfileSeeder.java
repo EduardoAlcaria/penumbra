@@ -32,30 +32,40 @@ public class ProfileSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (controllers.count() == 0) seedControllers();
+        seedControllers();
         if (components.count() == 0) importComponents();
     }
 
     /** Nollie family recipes extracted from SignalRGB's Nollie*.js. */
     private void seedControllers() {
-        // Nollie 8 v2 — the user's controller. Auto-detect: FC 03 -> 8x u16be LEDs/channel.
-        controllers.save(nollie("Nollie 8 v2", 0x16D2, 0x1F01, 8));
+        // Nollie 8 v2 — original firmware. Auto-detect: FC 03 -> 8x u16be LEDs/channel.
+        saveIfAbsent(nollie("Nollie 8 v2", 0x16D2, 0x1F01, 8, 0));
+        // Same board after a NollieRGB OS 2.1 reflash — new USB identity, identical
+        // interval-6 framing (OpenRGB NollieController: NOLLIE8_OS21_PID, interface 2).
+        saveIfAbsent(nollie("Nollie 8 (OS 2.1)", 0x16D5, 0x2A08, 8, 2));
         // 16/32ch are seeded so they are RECOGNIZED (the UI can warn the user), but the
         // framing guard in DetectedDevice refuses to DRIVE them: they speak OpenRGB's
         // 1025-byte SendPacket protocol, not this interval-6 framing. They stay disabled
         // until a real "nollie_big" framing exists.
-        controllers.save(nollie("Nollie 16 v3", 0x3061, 0x4716, 16));
-        controllers.save(nollie("Nollie 32",    0x3061, 0x4714, 32));
+        saveIfAbsent(nollie("Nollie 16 v3", 0x3061, 0x4716, 16, 0));
+        saveIfAbsent(nollie("Nollie 32",    0x3061, 0x4714, 32, 0));
         log.info("Seeded {} controller profiles", controllers.count());
     }
 
-    private ControllerProfile nollie(String name, int vid, int pid, int channels) {
+    /** Upsert-lite: existing DBs pick up newly added profiles without a wipe. */
+    private void saveIfAbsent(ControllerProfile p) {
+        if (controllers.findByVendorIdAndProductId(p.getVendorId(), p.getProductId()).isEmpty()) {
+            controllers.save(p);
+        }
+    }
+
+    private ControllerProfile nollie(String name, int vid, int pid, int channels, int hidInterface) {
         ControllerProfile p = new ControllerProfile();
         p.setName(name);
         p.setBrand("Nollie");
         p.setVendorId(vid);
         p.setProductId(pid);
-        p.setHidInterface(0);
+        p.setHidInterface(hidInterface);
         p.setReportLength(65);
         p.setChannelCount(channels);
         p.setMaxLedsPerChannel(126);
