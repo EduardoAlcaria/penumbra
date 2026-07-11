@@ -14,6 +14,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useT } from "@/lib/i18n";
+import { restoreTheme } from "@/lib/themes";
 import { cn } from "@/lib/utils";
 
 /** Splash overlay: covers the engine boot, then sweeps away into the shell. */
@@ -78,6 +79,7 @@ export default function Shell() {
   };
 
   useEffect(() => {
+    restoreTheme();
     refresh();
     const t = setInterval(refresh, 3000);
     return () => clearInterval(t);
