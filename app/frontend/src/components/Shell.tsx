@@ -68,14 +68,14 @@ export default function Shell() {
   };
 
   const rescan = () => {
-    api
+    api.unsupported().then(setUnsupported).catch(() => {});
+    return api
       .rescan()
       .then((d) => {
         setDevices(d);
         setError(null);
       })
       .catch((e) => setError(String(e)));
-    api.unsupported().then(setUnsupported).catch(() => {});
   };
 
   useEffect(() => {
