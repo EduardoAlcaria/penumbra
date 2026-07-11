@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LANGUAGES, useT } from "@/lib/i18n";
+import { applyTheme, listThemes, savedThemeFile, type Theme } from "@/lib/themes";
 import { cn } from "@/lib/utils";
 
 // Autostart / open-folder need the Tauri runtime; plain browser dev has none.
@@ -27,10 +28,23 @@ function Row({ title, hint, children }: { title: string; hint: string; children?
 export default function SettingsScreen() {
   const { t, lang, setLang } = useT();
   const [autostart, setAutostart] = useState(false);
+  const [themes, setThemes] = useState<Theme[]>([]);
+  const [themeFile, setThemeFile] = useState(savedThemeFile());
 
   useEffect(() => {
-    if (IS_TAURI) isEnabled().then(setAutostart).catch(() => {});
+    if (!IS_TAURI) return;
+    isEnabled().then(setAutostart).catch(() => {});
+    const load = () => listThemes().then(setThemes).catch(() => {});
+    load();
+    // Re-read on focus so edits made in the themes folder show up live.
+    window.addEventListener("focus", load);
+    return () => window.removeEventListener("focus", load);
   }, []);
+
+  const pickTheme = (theme: Theme | null) => {
+    applyTheme(theme);
+    setThemeFile(theme ? theme.file : "");
+  };
 
   const toggleAutostart = (on: boolean) => {
     setAutostart(on);
@@ -65,6 +79,47 @@ export default function SettingsScreen() {
                   </button>
                 ))}
               </div>
+            </Row>
+            <Row title={t("settings.theme")} hint={IS_TAURI ? t("settings.theme.hint") : t("settings.desktop.only")}>
+              <div className="flex max-w-[60%] flex-wrap justify-end gap-1 rounded-lg bg-muted p-1">
+                <button
+                  onClick={() => pickTheme(null)}
+                  className={cn(
+                    "rounded-md px-3 py-1 text-sm transition-colors",
+                    themeFile === ""
+                      ? "bg-background font-medium text-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  Penumbra
+                </button>
+                {themes.map((th) => (
+                  <button
+                    key={th.file}
+                    onClick={() => pickTheme(th)}
+                    className={cn(
+                      "rounded-md px-3 py-1 text-sm transition-colors",
+                      themeFile === th.file
+                        ? "bg-background font-medium text-foreground shadow"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {th.name}
+                  </button>
+                ))}
+              </div>
+            </Row>
+            <Row title={t("settings.openthemes")} hint={IS_TAURI ? t("settings.openthemes.hint") : t("settings.desktop.only")}>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!IS_TAURI}
+                onClick={() => invoke("open_themes_dir").catch(() => {})}
+                className="gap-2"
+              >
+                <FolderOpen className="h-4 w-4" />
+                {t("settings.openthemes")}
+              </Button>
             </Row>
           </Card>
         </TabsContent>
