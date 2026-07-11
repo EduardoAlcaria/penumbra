@@ -30,6 +30,12 @@ fn start_engine(app: &tauri::App) -> Option<Child> {
 
     let mut cmd = Command::new("java");
     cmd.arg("-jar").arg(&jar);
+    // Run the engine from the jar's dir so its H2 db (./data) lands there —
+    // never in a dev-watched folder, where the lock file would trigger an
+    // endless rebuild/restart loop in `tauri dev`.
+    if let Some(dir) = jar.parent() {
+        cmd.current_dir(dir);
+    }
     #[cfg(windows)]
     {
         use std::os::windows::process::CommandExt;
