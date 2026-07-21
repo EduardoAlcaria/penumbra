@@ -73,13 +73,14 @@ export default function LayoutScreen({ devices }: Props) {
 
   const channelCount = devices[0]?.channels ?? 0;
 
-  // Picking a fan drops one onto every channel — the common "same fan on each
-  // header" rig. Tune per channel afterwards by removing chips.
-  const addToAllChannels = (componentId: number) =>
-    setRows((r) => [
-      ...r,
-      ...Array.from({ length: channelCount }, (_, ch) => ({ channel: ch, componentId })),
-    ]);
+  // Picking a fan fills every channel with exactly one of it (one fan per
+  // channel) and retracts the search. Re-picking replaces; trim per channel
+  // with the ✕ chips, or wipe everything with Clear all.
+  const setAllChannels = (componentId: number) => {
+    setRows(Array.from({ length: channelCount }, (_, ch) => ({ channel: ch, componentId })));
+    setQuery("");
+  };
+  const clearAll = () => setRows([]);
   const removeRow = (idx: number) => setRows((r) => r.filter((_, i) => i !== idx));
 
   const save = () => {
@@ -123,7 +124,7 @@ export default function LayoutScreen({ devices }: Props) {
               fans.slice(0, 8).map((f) => (
                 <button
                   key={f.id}
-                  onClick={() => addToAllChannels(f.id)}
+                  onClick={() => setAllChannels(f.id)}
                   className="flex w-full items-center gap-3 border-b border-border/50 px-3 py-2 text-left last:border-b-0 hover:bg-secondary"
                 >
                   {f.imageUrl ? (
@@ -176,8 +177,13 @@ export default function LayoutScreen({ devices }: Props) {
             </div>
           ))}
         </div>
-        <div className="mt-5">
+        <div className="mt-5 flex gap-2">
           <Button onClick={save}>{t("layout.save")}</Button>
+          {rows.length > 0 && (
+            <Button variant="secondary" onClick={clearAll}>
+              {t("layout.clear")}
+            </Button>
+          )}
         </div>
       </Card>
     </div>
