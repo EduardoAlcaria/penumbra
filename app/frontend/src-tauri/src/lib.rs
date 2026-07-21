@@ -1,6 +1,8 @@
 use std::process::{Child, Command};
 use std::sync::Mutex;
-use tauri::{Manager, RunEvent};
+use tauri::menu::{Menu, MenuItem};
+use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+use tauri::{Manager, RunEvent, WindowEvent};
 
 /// Handle to the Java engine process so it can be killed when the window closes.
 struct Engine(Mutex<Option<Child>>);
@@ -150,13 +152,55 @@ fn open_themes_dir(app: tauri::AppHandle) -> Result<(), String> {
         .map_err(|e| e.to_string())
 }
 
+/// Show and focus the main window (used by the tray click and Show menu item).
+fn show_main(app: &tauri::AppHandle) {
+    if let Some(win) = app.get_webview_window("main") {
+        let _ = win.show();
+        let _ = win.unminimize();
+        let _ = win.set_focus();
+    }
+}
+
+/// System tray: left-click opens the window, menu has Show and Quit.
+fn build_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
+    let show = MenuItem::with_id(app, "show", "Show Penumbra", true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+    let menu = Menu::with_items(app, &[&show, &quit])?;
+
+    TrayIconBuilder::new()
+        .icon(app.default_window_icon().unwrap().clone())
+        .tooltip("Penumbra")
+        .menu(&menu)
+        .show_menu_on_left_click(false)
+        .on_menu_event(|app, event| match event.id.as_ref() {
+            "show" => show_main(app),
+            "quit" => app.exit(0),
+            _ => {}
+        })
+        .on_tray_icon_event(|tray, event| {
+            if let TrayIconEvent::Click {
+                button: MouseButton::Left,
+                button_state: MouseButtonState::Up,
+                ..
+            } = event
+            {
+                show_main(tray.app_handle());
+            }
+        })
+        .build(app)?;
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        // On boot the app autostarts with --minimized so it lands in the tray
+        // instead of flashing a window (in dev that window is just WebView2's
+        // "can't reach the Vite server" error page).
         .plugin(tauri_plugin_autostart::init(
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
-            None,
+            Some(vec!["--minimized"]),
         ))
         .invoke_handler(tauri::generate_handler![
             open_config_dir,
@@ -166,7 +210,25 @@ pub fn run() {
         .setup(|app| {
             let child = start_engine(app);
             app.manage(Engine(Mutex::new(child)));
+            build_tray(app.handle())?;
+
+            // Show the window unless we were autostarted minimized to the tray.
+            let minimized = std::env::args().any(|a| a == "--minimized");
+            if let Some(win) = app.get_webview_window("main") {
+                if !minimized {
+                    let _ = win.show();
+                    let _ = win.set_focus();
+                }
+            }
             Ok(())
+        })
+        .on_window_event(|window, event| {
+            // Closing the window hides to the tray; the engine keeps running.
+            // Real exit only via the tray's Quit item.
+            if let WindowEvent::CloseRequested { api, .. } = event {
+                let _ = window.hide();
+                api.prevent_close();
+            }
         })
         .build(tauri::generate_context!())
         .expect("error while building Penumbra")
