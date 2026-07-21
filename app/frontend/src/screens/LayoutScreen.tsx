@@ -73,27 +73,36 @@ export default function LayoutScreen({ devices }: Props) {
 
   const channelCount = devices[0]?.channels ?? 0;
 
-  // Picking a fan fills every channel with exactly one of it (one fan per
-  // channel) and retracts the search. Re-picking replaces; trim per channel
-  // with the ✕ chips, or wipe everything with Clear all.
-  const setAllChannels = (componentId: number) => {
-    setRows(Array.from({ length: channelCount }, (_, ch) => ({ channel: ch, componentId })));
-    setQuery("");
-  };
-  const clearAll = () => setRows([]);
-  const removeRow = (idx: number) => setRows((r) => r.filter((_, i) => i !== idx));
-
-  const save = () => {
+  // Single source of truth: every edit persists immediately and the board + chips
+  // rebuild from the server's response, so nothing shows stale or "comes back"
+  // on reopen. No separate Save step.
+  const persist = (next: Row[]) => {
     if (!controllerKey) return;
-    // position = order within each channel, derived from row order
     const perChannel: Record<number, number> = {};
-    const items = rows.map((row) => {
+    const items = next.map((row) => {
       const position = perChannel[row.channel] ?? 0;
       perChannel[row.channel] = position + 1;
       return { channel: row.channel, position, componentId: row.componentId };
     });
-    api.setAssignments(controllerKey, items).then(setLayout).catch(() => {});
+    setRows(next); // optimistic; the response confirms
+    api
+      .setAssignments(controllerKey, items)
+      .then((l) => {
+        setLayout(l.fans.length > 0 ? l : null);
+        setRows(l.fans.map((f) => ({ channel: f.channel, componentId: f.componentId })));
+      })
+      .catch(() => {});
   };
+
+  // Picking a fan fills every channel with exactly one of it (one fan per channel)
+  // and retracts the search. Re-picking replaces; trim per channel with the ✕
+  // chips, or wipe everything with Clear all.
+  const setAllChannels = (componentId: number) => {
+    persist(Array.from({ length: channelCount }, (_, ch) => ({ channel: ch, componentId })));
+    setQuery("");
+  };
+  const clearAll = () => persist([]);
+  const removeRow = (idx: number) => persist(rows.filter((_, i) => i !== idx));
 
   if (!controllerKey) {
     return (
@@ -177,14 +186,13 @@ export default function LayoutScreen({ devices }: Props) {
             </div>
           ))}
         </div>
-        <div className="mt-5 flex gap-2">
-          <Button onClick={save}>{t("layout.save")}</Button>
-          {rows.length > 0 && (
+        {rows.length > 0 && (
+          <div className="mt-5">
             <Button variant="secondary" onClick={clearAll}>
               {t("layout.clear")}
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </Card>
     </div>
   );
