@@ -3,6 +3,7 @@ import { api, type Device, type EffectRequest, type UnsupportedDevice } from "@/
 import Sidebar, { type Screen } from "@/components/Sidebar";
 import EffectsScreen from "@/screens/EffectsScreen";
 import DevicesScreen from "@/screens/DevicesScreen";
+import LayoutScreen from "@/screens/LayoutScreen";
 import SettingsScreen from "@/screens/SettingsScreen";
 import { Button } from "@/components/ui/button";
 import {
@@ -114,6 +115,7 @@ export default function Shell() {
   const titles: Record<Screen, string> = {
     effects: t("effects.title"),
     devices: t("devices.title"),
+    layout: t("layout.title"),
     settings: t("settings.title"),
   };
 
@@ -142,6 +144,7 @@ export default function Shell() {
               <EffectsScreen effect={effect} color={color} speed={speed} apply={apply} />
             )}
             {screen === "devices" && <DevicesScreen devices={devices} unsupported={unsupported} />}
+            {screen === "layout" && <LayoutScreen devices={devices} />}
             {screen === "settings" && <SettingsScreen />}
           </div>
         </div>
