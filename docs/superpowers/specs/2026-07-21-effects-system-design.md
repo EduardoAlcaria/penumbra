@@ -14,7 +14,7 @@ fixed list.
 The user wants what SignalRGB offers: **spatial, file-based effects authored in an
 in-app visual editor** — effects that understand *sides* (the left vs. right strip
 of a fan), a canvas that shows the real fans, and a Render button that exports the
-design to JSON the engine can run. The reference the user pointed to is SignalRGB's
+design to YAML the engine can run. The reference the user pointed to is SignalRGB's
 `Side To Side.html`.
 
 This document designs the whole system end to end. It is built in three layers,
@@ -40,8 +40,10 @@ From `Side To Side.html` (SignalRGB effect file):
    no hard-coded "left"/"right" region.
 
 Penumbra copies this model, with one change: instead of arbitrary JS, effects are
-**declarative JSON** produced by the editor. Engine and editor render the *same*
-canvas, so the editor is WYSIWYG.
+**declarative YAML** produced by the editor (same format family as the themes, and
+hand-editable — comments, clean nesting). Engine and editor render the *same*
+canvas, so the editor is WYSIWYG. Parsed backend-side with `jackson-dataformat-yaml`
+(maps YAML straight onto the effect records) and frontend-side with `js-yaml`.
 
 ## Architecture
 
@@ -58,15 +60,16 @@ Editor (Layer 3)  ──Render──▶  effect.json  ──▶  Engine (Layer 2
 
 - **Layer 1 — Device Layout:** where each physical LED sits on a 2-D world grid,
   derived from which gear is on which controller channel.
-- **Layer 2 — Effect format + engine:** the effect JSON schema and the engine that
+- **Layer 2 — Effect format + engine:** the effect YAML schema and the engine that
   rasterizes it to a canvas and samples each LED's world coordinate.
-- **Layer 3 — Editor:** the visual authoring UI that exports effect JSON.
+- **Layer 3 — Editor:** the visual authoring UI that exports effect YAML.
 
 ### Runtime flow (end to end)
 
 1. User assigns gear to channels (Layer 1) → engine holds an `LED index → (x,y)` map.
-2. User picks/authors an effect (Layer 3) → `effect.json` in the effects dir.
-3. User activates it → `POST /api/effect` with the file → engine loads the JSON.
+2. User picks/authors an effect in Penumbra's own editor (Layer 3) → `effect.yaml`
+   in the effects dir.
+3. User activates it → `POST /api/effect` with the file → engine loads the YAML.
 4. Each ~16 ms tick: engine rasterizes the effect's layers onto an offscreen canvas
    for the current time, then for every LED samples the canvas at its world `(x,y)`,
    writes the color, latches the frame to the Nollie.
@@ -158,26 +161,28 @@ add/remove/reorder in chain). This is the board Layer 3's editor is later built 
 ## Layer 2 — Effect format + engine
 
 **Goal:** replace the 1-D `colorAt(pos, t)` model with SignalRGB's canvas-sample
-model, driven by declarative effect JSON.
+model, driven by declarative effect YAML.
 
-### Effect JSON schema (v1)
+### Effect YAML schema (v1)
 
-```json
-{
-  "name": "Side to Side",
-  "description": "Colors sweep back and forth across the setup.",
-  "canvas": { "width": 320, "height": 200 },
-  "properties": [
-    { "key": "color1", "label": "Color 1", "type": "color", "default": "#082EFF" },
-    { "key": "color2", "label": "Color 2", "type": "color", "default": "#FF03AF" },
-    { "key": "speed",  "label": "Speed",  "type": "number", "default": 15, "min": 0, "max": 100 }
-  ],
-  "layers": [
-    { "type": "solid",  "color": "@color1" },
-    { "type": "sweep",  "axis": "x", "color": "@color2", "band": 0.3, "speed": "@speed",
-      "keyframes": [ { "t": 0, "pos": 0 }, { "t": 1, "pos": 1 } ] }
-  ]
-}
+```yaml
+name: Side to Side
+description: Colors sweep back and forth across the setup.
+canvas: { width: 320, height: 200 }
+properties:
+  - { key: color1, label: Color 1, type: color, default: "#082EFF" }
+  - { key: color2, label: Color 2, type: color, default: "#FF03AF" }
+  - { key: speed,  label: Speed,  type: number, default: 15, min: 0, max: 100 }
+layers:
+  - { type: solid, color: "@color1" }
+  - type: sweep
+    axis: x
+    color: "@color2"
+    band: 0.3
+    speed: "@speed"
+    keyframes:
+      - { t: 0, pos: 0 }
+      - { t: 1, pos: 1 }
 ```
 
 - **`properties`** — the editable controls (mirrors SignalRGB `meta property`).
@@ -190,7 +195,7 @@ model, driven by declarative effect JSON.
   bitmap, how the editor stores freeform painting). `@key` references a property
   value; `keyframes` interpolate a layer's params over normalized looping time
   `t ∈ [0,1)` at a rate set by `speed`.
-- Built-in effects (rainbow/static/breathing) are re-expressed as JSON so there is
+- Built-in effects (rainbow/static/breathing) are re-expressed as YAML so there is
   one code path.
 
 ### Engine
@@ -202,40 +207,41 @@ model, driven by declarative effect JSON.
 - Sampling: nearest-pixel for v1 (bilinear later if it looks blocky).
 - Effects with no layout map (no Layer 1 assignment) fall back to sampling along a
   1-D strip so unassigned setups still light.
-- A small `EffectRenderer` interprets the JSON layer list; keep it isolated and unit
+- A small `EffectRenderer` interprets the YAML layer list; keep it isolated and unit
   tested (a 2×2 canvas with a known layer stack yields known pixels).
 
 ### Effects storage
 
-Effect JSON files live in `app_config_dir/effects/*.json`, seeded with the
+Effect YAML files live in `app_config_dir/effects/*.yaml`, seeded with the
 built-ins on first run — mirrors the existing themes dir mechanism in
 `src-tauri/src/lib.rs` (`themes_dir`, `list_themes`, `BUILTIN_THEMES`). Add
 `effects_dir`, `list_effects`, `open_effects_dir`. `POST /api/effect` accepts a
-file name (loads + parses) as well as the current inline body for back-compat.
+file name (loads + parses the YAML) as well as the current inline body for
+back-compat.
 
 ### Layer 2 verification
 
-- Load the built-in "Side to Side" JSON → the Nollie sweeps color across the fans;
+- Load the built-in "Side to Side" YAML → the Nollie sweeps color across the fans;
   left fans change before right fans.
-- Static/rainbow/breathing JSON match the old hard-coded versions.
+- Static/rainbow/breathing YAML match the old hard-coded versions.
 - `EffectRenderer` unit test: known layer stack → known canvas pixels.
 
 ---
 
 ## Layer 3 — Editor
 
-**Goal:** the visual authoring UI that produces effect JSON.
+**Goal:** the visual authoring UI that produces effect YAML.
 
 - **Fan board:** reuses Layer 1's board. A search bar picks a fan **model** from the
   library; a count selector places *N* of them side by side as the authoring canvas
   (this is a design surface — it need not equal the user's real hardware).
-- **Templates:** start from an existing effect (loads its JSON to edit) or blank.
+- **Templates:** start from an existing effect (loads its YAML to edit) or blank.
 - **Tools:** select regions/parts of the board, paint colors, edit the property
   controls (colors, speed), and a keyframe timeline for animating layer params.
   Freeform painting is stored as an `image` layer; parametric edits map to the other
   layer types.
 - **Render button:** serializes the board + layers + keyframes + properties to the
-  effect JSON schema, writes it to the effects dir, and it appears in the Effects
+  effect YAML schema, writes it to the effects dir, and it appears in the Effects
   screen.
 - **Interactive canvas (deferred from Layer 1):** fans get user-defined positions
   (drag), individual selection, and *linking* — where linking means defining the
@@ -264,7 +270,7 @@ file name (loads + parses) as well as the current inline body for back-compat.
 ## Build order
 
 1. **Layer 1 — Device Layout.** Standalone; testable without touching effects.
-2. **Layer 2 — Effect JSON + 2-D engine.** Needs Layer 1's world map.
+2. **Layer 2 — Effect YAML + 2-D engine.** Needs Layer 1's world map.
 3. **Layer 3 — Editor.** Needs Layers 1 and 2.
 
 Each layer gets its own implementation plan via the writing-plans skill. This
@@ -277,5 +283,5 @@ document is the shared design; the first plan covers Layer 1 only.
 - Rotation/scale of fans on the canvas — v1 uses each component's native grid.
 - Bilinear canvas sampling, blend modes between layers — nearest-pixel, ordered draw
   for v1.
-- Sharing/importing SignalRGB `.html` effects directly — Penumbra effects are JSON;
+- Sharing/importing SignalRGB `.html` effects directly — Penumbra effects are YAML;
   interop is out of scope.
