@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Cpu, RefreshCw, Settings, Sparkles } from "lucide-react";
+import { Cpu, LayoutGrid, RefreshCw, Settings, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
-export type Screen = "effects" | "devices" | "settings";
+export type Screen = "effects" | "devices" | "layout" | "settings";
 
 interface Props {
   screen: Screen;
@@ -25,6 +25,7 @@ export default function Sidebar({ screen, setScreen, deviceCount, onRescan }: Pr
   const items: { id: Screen; label: string; icon: typeof Sparkles }[] = [
     { id: "effects", label: t("nav.effects"), icon: Sparkles },
     { id: "devices", label: t("nav.devices"), icon: Cpu },
+    { id: "layout", label: t("nav.layout"), icon: LayoutGrid },
   ];
 
   const navButton = (id: Screen, label: string, Icon: typeof Sparkles) => (
