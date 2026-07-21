@@ -272,7 +272,7 @@ public class EffectRenderer {
                 double center = (t * speed) % 1.0;
                 for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) {
                     double pos = axisPos(x, y, w, h, xAxis);
-                    if (wrappedDist(pos, center) <= band / 2) px[y * w + x] = c;
+                    if (Math.abs(pos - center) <= band / 2) px[y * w + x] = c;
                 }
             }
             case "rainbow" -> {
@@ -301,12 +301,6 @@ public class EffectRenderer {
     private static double axisPos(int x, int y, int w, int h, boolean xAxis) {
         if (xAxis) return w == 1 ? 0.0 : x / (double) (w - 1);
         return h == 1 ? 0.0 : y / (double) (h - 1);
-    }
-
-    /** Shortest distance between two positions on a 0..1 wrap-around ring. */
-    private static double wrappedDist(double a, double b) {
-        double d = Math.abs(a - b) % 1.0;
-        return Math.min(d, 1.0 - d);
     }
 
     public static int sample(int[] canvas, int w, int h, double nx, double ny) {
