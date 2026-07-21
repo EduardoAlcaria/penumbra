@@ -7,7 +7,16 @@ import { Slider } from "@/components/ui/slider";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
-const EFFECTS: EffectRequest["type"][] = ["rainbow", "static", "breathing"];
+// Each effect declares whether its color is user-pickable. Rainbow cycles the
+// whole spectrum, so a color choice is meaningless — speed only.
+// ponytail: static list; move to a backend /api/effects catalog when effects
+// become pluggable (the deferred "base effect" feature).
+type EffectDef = { type: EffectRequest["type"]; customizableColor: boolean };
+const EFFECTS: EffectDef[] = [
+  { type: "rainbow", customizableColor: false },
+  { type: "static", customizableColor: true },
+  { type: "breathing", customizableColor: true },
+];
 
 /** Little swatch that previews what each effect looks like. */
 function effectSwatch(type: EffectRequest["type"], color: string): React.CSSProperties {
@@ -35,8 +44,9 @@ export default function EffectsScreen({ effect, color, speed, apply }: Props) {
   const [query, setQuery] = useState("");
 
   const visible = EFFECTS.filter((e) =>
-    t(`effect.${e}`).toLowerCase().includes(query.trim().toLowerCase()),
+    t(`effect.${e.type}`).toLowerCase().includes(query.trim().toLowerCase()),
   );
+  const canColor = EFFECTS.find((e) => e.type === effect)?.customizableColor ?? true;
 
   return (
     <div className="space-y-6">
@@ -46,7 +56,7 @@ export default function EffectsScreen({ effect, color, speed, apply }: Props) {
           <span>{t("preview.live")}</span>
           <span className="flex items-center gap-3">
             <span className="text-foreground/80">{t(`effect.${effect}`)}</span>
-            <span>{color}</span>
+            {canColor && <span>{color}</span>}
           </span>
         </div>
         <div className="relative h-28 overflow-hidden rounded-xl ring-1 ring-inset ring-white/10">
@@ -67,52 +77,54 @@ export default function EffectsScreen({ effect, color, speed, apply }: Props) {
       <div className="animate-rise grid gap-4 sm:grid-cols-2 lg:grid-cols-3" style={{ animationDelay: "0.1s" }}>
         {visible.map((e) => (
           <Card
-            key={e}
-            onClick={() => apply({ type: e })}
+            key={e.type}
+            onClick={() => apply({ type: e.type })}
             className={cn(
               "cursor-pointer p-4 transition-all hover:-translate-y-0.5 hover:bg-card/80",
-              effect === e && "ring-1 ring-primary/60",
+              effect === e.type && "ring-1 ring-primary/60",
             )}
           >
             <div
               className="mb-3 h-16 w-full rounded-lg ring-1 ring-inset ring-white/10"
-              style={effectSwatch(e, color)}
+              style={effectSwatch(e.type, color)}
             />
             <div className="flex items-center justify-between">
-              <span className="font-semibold">{t(`effect.${e}`)}</span>
-              {effect === e && (
+              <span className="font-semibold">{t(`effect.${e.type}`)}</span>
+              {effect === e.type && (
                 <span
                   className="h-1.5 w-1.5 rounded-full bg-primary"
                   style={{ boxShadow: "0 0 8px var(--glow)" }}
                 />
               )}
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">{t(`effect.${e}.desc`)}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{t(`effect.${e.type}.desc`)}</p>
           </Card>
         ))}
       </div>
 
       {/* Controls */}
       <Card className="animate-rise max-w-md p-5" style={{ animationDelay: "0.14s" }}>
-        <div className="mb-2">
-          <label className="mb-2 flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-            {t("control.color")} <span className="text-foreground/70">{color}</span>
-          </label>
-          <div className="flex items-center gap-3">
-            <input
-              type="color"
-              value={color}
-              onChange={(e) => apply({ color: e.target.value })}
-              aria-label={t("control.color")}
-              className="h-10 w-14 shrink-0 cursor-pointer rounded-lg border border-border bg-transparent"
-            />
-            <div
-              className="h-10 flex-1 rounded-lg ring-1 ring-inset ring-white/10"
-              style={{ background: color }}
-            />
+        {canColor && (
+          <div className="mb-2">
+            <label className="mb-2 flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+              {t("control.color")} <span className="text-foreground/70">{color}</span>
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => apply({ color: e.target.value })}
+                aria-label={t("control.color")}
+                className="h-10 w-14 shrink-0 cursor-pointer rounded-lg border border-border bg-transparent"
+              />
+              <div
+                className="h-10 flex-1 rounded-lg ring-1 ring-inset ring-white/10"
+                style={{ background: color }}
+              />
+            </div>
           </div>
-        </div>
-        <div className="mt-6">
+        )}
+        <div className={canColor ? "mt-6" : ""}>
           <label className="mb-3 flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
             {t("control.speed")} <span className="tabular-nums text-foreground/70">{speed.toFixed(2)}</span>
           </label>
