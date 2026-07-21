@@ -25,27 +25,52 @@ function fansToChans(fans: LayoutFan[]): Chans {
   return m;
 }
 
-/** Draws one controller's fans as a static board, scaled to fit the card. */
+/**
+ * Draws one controller's fans as a static board: each fan is its real top-view
+ * photo sized to its LED-grid footprint, with the RGB LEDs as a faint ring on
+ * top so the fan is recognizable (not abstract dots).
+ */
 function Board({ layout }: { layout: ControllerLayout }) {
   const { minX, minY, maxX, maxY } = layout.bounds;
   const w = Math.max(1, maxX - minX);
   const h = Math.max(1, maxY - minY);
-  const scale = 26; // px per world unit
+  const scale = 30; // px per world unit
   return (
     <div
       className="relative rounded-xl bg-muted/30 ring-1 ring-inset ring-white/10"
       style={{ width: (w + 2) * scale, height: (h + 2) * scale }}
     >
+      {/* Fan bodies: the actual product photo at each fan's footprint. */}
+      {layout.fans.map((fan) =>
+        fan.imageUrl ? (
+          <img
+            key={`img-${fan.channel}-${fan.position}`}
+            src={fan.imageUrl}
+            alt={fan.name}
+            loading="lazy"
+            className="absolute object-contain"
+            style={{
+              left: (fan.originX - minX + 1) * scale,
+              top: (fan.originY - minY + 1) * scale,
+              width: fan.width * scale,
+              height: fan.height * scale,
+            }}
+            onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
+          />
+        ) : null,
+      )}
+      {/* LED ring overlaid on the fan, tinted by the active effect color. */}
       {layout.fans.flatMap((fan) =>
         fan.leds.map((led) => (
           <span
-            key={`${fan.channel}-${fan.position}-${led.flatIndex}`}
-            className="absolute h-2 w-2 rounded-full"
+            key={`led-${fan.channel}-${fan.position}-${led.flatIndex}`}
+            className="absolute h-1.5 w-1.5 rounded-full"
             style={{
               left: (led.x - minX + 1) * scale,
               top: (led.y - minY + 1) * scale,
               background: "var(--glow)",
-              boxShadow: "0 0 6px var(--glow)",
+              boxShadow: "0 0 5px var(--glow)",
+              opacity: 0.75,
             }}
           />
         )),
