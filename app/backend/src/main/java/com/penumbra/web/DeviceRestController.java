@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 // local API (HID enumeration, effect control) since it binds 127.0.0.1 that the
 // browser can still reach. Enumerate the Vite dev + Tauri webview origins.
 @CrossOrigin(origins = {
-        "http://localhost:5173", "http://127.0.0.1:5173",   // Vite dev
+        "http://localhost:8788", "http://127.0.0.1:8788",   // Vite dev
         "http://tauri.localhost", "https://tauri.localhost", // Tauri v2 webview (Windows)
         "tauri://localhost"                                   // Tauri webview (macOS/Linux)
 })
