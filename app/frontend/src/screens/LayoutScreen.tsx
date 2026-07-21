@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { api, type Component, type ControllerLayout, type Device } from "@/lib/api";
+import { api, type Component, type ControllerLayout, type Device, type LayoutFan } from "@/lib/api";
 import SearchBar from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,10 +9,20 @@ interface Props {
   devices: Device[];
 }
 
-// One row per assigned fan; the channel comes from the row's channel field.
-interface Row {
-  channel: number;
-  componentId: number;
+// Per channel: which fan model and how many are daisy-chained on it. CS120s
+// chain identical units, so a channel is one model × a count.
+// ponytail: single model per channel; add a mixed-chain editor if a rig needs it.
+type Chan = { componentId: number; count: number };
+type Chans = Record<number, Chan>;
+
+/** Group the server's flat per-fan list back into per-channel {model, count}. */
+function fansToChans(fans: LayoutFan[]): Chans {
+  const m: Chans = {};
+  for (const f of fans) {
+    if (!m[f.channel]) m[f.channel] = { componentId: f.componentId, count: 0 };
+    m[f.channel].count += 1;
+  }
+  return m;
 }
 
 /** Draws one controller's fans as a static board, scaled to fit the card. */
@@ -48,7 +58,7 @@ export default function LayoutScreen({ devices }: Props) {
   const { t } = useT();
   const [gear, setGear] = useState<Component[]>([]);
   const [layout, setLayout] = useState<ControllerLayout | null>(null);
-  const [rows, setRows] = useState<Row[]>([]);
+  const [chans, setChans] = useState<Chans>({});
   const [query, setQuery] = useState("");
 
   const controllerKey = devices[0]?.id ?? null;
@@ -62,7 +72,7 @@ export default function LayoutScreen({ devices }: Props) {
     api.layout().then((d) => {
       const mine = d.controllers.find((c) => c.controllerKey === controllerKey) ?? null;
       setLayout(mine);
-      setRows(mine ? mine.fans.map((f) => ({ channel: f.channel, componentId: f.componentId })) : []);
+      setChans(mine ? fansToChans(mine.fans) : {});
     }).catch(() => {});
   }, [controllerKey]);
 
@@ -76,33 +86,42 @@ export default function LayoutScreen({ devices }: Props) {
   // Single source of truth: every edit persists immediately and the board + chips
   // rebuild from the server's response, so nothing shows stale or "comes back"
   // on reopen. No separate Save step.
-  const persist = (next: Row[]) => {
+  const persist = (next: Chans) => {
     if (!controllerKey) return;
-    const perChannel: Record<number, number> = {};
-    const items = next.map((row) => {
-      const position = perChannel[row.channel] ?? 0;
-      perChannel[row.channel] = position + 1;
-      return { channel: row.channel, position, componentId: row.componentId };
-    });
-    setRows(next); // optimistic; the response confirms
+    // Expand each channel's {model, count} into count daisy positions.
+    const items = Object.entries(next).flatMap(([ch, v]) =>
+      Array.from({ length: v.count }, (_, i) => ({
+        channel: Number(ch),
+        position: i,
+        componentId: v.componentId,
+      })),
+    );
+    setChans(next); // optimistic; the response confirms
     api
       .setAssignments(controllerKey, items)
       .then((l) => {
         setLayout(l.fans.length > 0 ? l : null);
-        setRows(l.fans.map((f) => ({ channel: f.channel, componentId: f.componentId })));
+        setChans(fansToChans(l.fans));
       })
       .catch(() => {});
   };
 
-  // Picking a fan fills every channel with exactly one of it (one fan per channel)
-  // and retracts the search. Re-picking replaces; trim per channel with the ✕
-  // chips, or wipe everything with Clear all.
+  // Picking a fan puts one of it on every channel (each ×1) and retracts the
+  // search. Bump a channel's count for daisy-chained fans; ✕ clears a channel.
   const setAllChannels = (componentId: number) => {
-    persist(Array.from({ length: channelCount }, (_, ch) => ({ channel: ch, componentId })));
+    const next: Chans = {};
+    for (let ch = 0; ch < channelCount; ch++) next[ch] = { componentId, count: 1 };
+    persist(next);
     setQuery("");
   };
-  const clearAll = () => persist([]);
-  const removeRow = (idx: number) => persist(rows.filter((_, i) => i !== idx));
+  const setCount = (channel: number, count: number) =>
+    persist({ ...chans, [channel]: { ...chans[channel], count } });
+  const clearChannel = (channel: number) => {
+    const next = { ...chans };
+    delete next[channel];
+    persist(next);
+  };
+  const clearAll = () => persist({});
 
   if (!controllerKey) {
     return (
@@ -161,32 +180,51 @@ export default function LayoutScreen({ devices }: Props) {
         )}
 
         <div className="mt-4 space-y-4">
-          {Array.from({ length: channelCount }, (_, ch) => (
-            <div key={ch} className="rounded-lg bg-muted/20 p-3">
-              <div className="mb-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                {t("layout.channel")} {ch + 1}
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {rows.some((row) => row.channel === ch) ? (
-                  rows.map((row, idx) =>
-                    row.channel === ch ? (
+          {Array.from({ length: channelCount }, (_, ch) => {
+            const v = chans[ch];
+            const name = v ? gear.find((g) => g.id === v.componentId)?.name ?? v.componentId : null;
+            return (
+              <div key={ch} className="rounded-lg bg-muted/20 p-3">
+                <div className="mb-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                  {t("layout.channel")} {ch + 1}
+                </div>
+                {v ? (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="rounded-full bg-secondary px-3 py-1 text-xs ring-1 ring-primary/40">
+                      {name}
+                    </span>
+                    <div className="flex items-center gap-1">
                       <button
-                        key={idx}
-                        onClick={() => removeRow(idx)}
-                        className="rounded-full bg-secondary px-3 py-1 text-xs ring-1 ring-primary/40 hover:ring-destructive/60"
+                        onClick={() => (v.count > 1 ? setCount(ch, v.count - 1) : clearChannel(ch))}
+                        className="h-6 w-6 rounded-md bg-secondary text-sm leading-none hover:bg-muted"
+                        aria-label="minus"
                       >
-                        {gear.find((g) => g.id === row.componentId)?.name ?? row.componentId} ✕
+                        −
                       </button>
-                    ) : null,
-                  )
+                      <span className="w-8 text-center font-mono text-xs tabular-nums">×{v.count}</span>
+                      <button
+                        onClick={() => setCount(ch, v.count + 1)}
+                        className="h-6 w-6 rounded-md bg-secondary text-sm leading-none hover:bg-muted"
+                        aria-label="plus"
+                      >
+                        +
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => clearChannel(ch)}
+                      className="text-xs text-muted-foreground hover:text-destructive"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 ) : (
                   <span className="text-xs text-muted-foreground">—</span>
                 )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-        {rows.length > 0 && (
+        {Object.keys(chans).length > 0 && (
           <div className="mt-5">
             <Button variant="secondary" onClick={clearAll}>
               {t("layout.clear")}
