@@ -33,13 +33,16 @@ public class DeviceRestController {
     private final EffectEngine engine;
     private final HidService hid;
     private final ComponentProfileRepository components;
+    private final com.fasterxml.jackson.databind.ObjectMapper mapper;
 
     public DeviceRestController(DeviceManager deviceManager, EffectEngine engine, HidService hid,
-                                ComponentProfileRepository components) {
+                                ComponentProfileRepository components,
+                                com.fasterxml.jackson.databind.ObjectMapper mapper) {
         this.deviceManager = deviceManager;
         this.engine = engine;
         this.hid = hid;
         this.components = components;
+        this.mapper = mapper;
     }
 
     /** Raw dump of every attached HID device — use it to find an unknown controller's VID/PID. */
@@ -76,10 +79,14 @@ public class DeviceRestController {
     @GetMapping("/components")
     public List<Map<String, Object>> components() {
         return components.findAll().stream().map(c -> Map.<String, Object>of(
+                "id", c.getId(),
                 "name", c.getDisplayName() == null ? String.valueOf(c.getProductName()) : c.getDisplayName(),
                 "brand", c.getBrand() == null ? "" : c.getBrand(),
                 "type", c.getType() == null ? "" : c.getType(),
                 "ledCount", c.getLedCount(),
+                "width", c.getWidth(),
+                "height", c.getHeight(),
+                "ledCoordinates", parseCoords(c.getLedCoordinatesJson()),
                 "imageUrl", c.getImageUrl() == null ? "" : c.getImageUrl())).toList();
     }
 
@@ -136,6 +143,17 @@ public class DeviceRestController {
     private static int parseHex(String hex) {
         if (hex == null) return 0x009bde;
         return (int) Long.parseLong(hex.replace("#", ""), 16) & 0xFFFFFF;
+    }
+
+    /** Parse a component's "[[x,y],…]" LedCoordinates JSON into a list; [] on any problem. */
+    private List<List<Integer>> parseCoords(String json) {
+        if (json == null || json.isBlank()) return List.of();
+        try {
+            return mapper.readValue(json,
+                    new com.fasterxml.jackson.core.type.TypeReference<List<List<Integer>>>() { });
+        } catch (Exception e) {
+            return List.of();
+        }
     }
 
     public record EffectRequest(String type, String color, Double speed, Double spread) { }
