@@ -219,6 +219,17 @@ built-ins on first run — mirrors the existing themes dir mechanism in
 file name (loads + parses the YAML) as well as the current inline body for
 back-compat.
 
+### Live board (reactive fan RGB)
+
+The layout board shows the fan's real top-view photo (no abstract LED dots). In
+Layer 2 the fan's **RGB region becomes live-reactive**: the engine exposes the
+current per-LED colors (a lightweight `GET /api/frame` polled ~10–30 fps, or a
+websocket), and the board tints each fan's RGB ring/edge with the actual color that
+LED is outputting right now — so the board mirrors the hardware. Because the product
+photo's RGB edge doesn't map cleanly to the 22 logical LED points, this likely uses
+a stylized SVG fan (controlled RGB-segment geometry aligned to `LedCoordinates`)
+layered with the photo, rather than dots over the photo.
+
 ### Layer 2 verification
 
 - Load the built-in "Side to Side" YAML → the Nollie sweeps color across the fans;
