@@ -73,8 +73,13 @@ export default function LayoutScreen({ devices }: Props) {
 
   const channelCount = devices[0]?.channels ?? 0;
 
-  const addRow = (channel: number, componentId: number) =>
-    setRows((r) => [...r, { channel, componentId }]);
+  // Picking a fan drops one onto every channel — the common "same fan on each
+  // header" rig. Tune per channel afterwards by removing chips.
+  const addToAllChannels = (componentId: number) =>
+    setRows((r) => [
+      ...r,
+      ...Array.from({ length: channelCount }, (_, ch) => ({ channel: ch, componentId })),
+    ]);
   const removeRow = (idx: number) => setRows((r) => r.filter((_, i) => i !== idx));
 
   const save = () => {
@@ -108,40 +113,65 @@ export default function LayoutScreen({ devices }: Props) {
 
       <Card className="animate-rise p-5" style={{ animationDelay: "0.06s" }}>
         <SearchBar value={query} onChange={setQuery} placeholder={t("layout.pickfan")} />
+
+        {/* Suggestions: fans matching the search, with a thumbnail. Click = add to every channel. */}
+        {query.trim() && (
+          <div className="mt-3 overflow-hidden rounded-lg ring-1 ring-inset ring-white/10">
+            {fans.length === 0 ? (
+              <div className="px-3 py-2 text-xs text-muted-foreground">{t("layout.nofan")}</div>
+            ) : (
+              fans.slice(0, 8).map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => addToAllChannels(f.id)}
+                  className="flex w-full items-center gap-3 border-b border-border/50 px-3 py-2 text-left last:border-b-0 hover:bg-secondary"
+                >
+                  {f.imageUrl ? (
+                    <img
+                      src={f.imageUrl}
+                      alt=""
+                      loading="lazy"
+                      className="h-9 w-9 shrink-0 object-contain"
+                      onError={(e) => ((e.target as HTMLImageElement).style.visibility = "hidden")}
+                    />
+                  ) : (
+                    <div className="h-9 w-9 shrink-0 rounded bg-muted/40" />
+                  )}
+                  <span className="flex-1 truncate text-sm">{f.name}</span>
+                  <span className="shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground">
+                    {f.ledCount} {t("devices.leds")}
+                  </span>
+                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-primary">
+                    {t("layout.addall")}
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+
         <div className="mt-4 space-y-4">
           {Array.from({ length: channelCount }, (_, ch) => (
             <div key={ch} className="rounded-lg bg-muted/20 p-3">
               <div className="mb-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                 {t("layout.channel")} {ch + 1}
               </div>
-              <div className="flex flex-wrap gap-2">
-                {rows.map((row, idx) =>
-                  row.channel === ch ? (
-                    <button
-                      key={idx}
-                      onClick={() => removeRow(idx)}
-                      className="rounded-full bg-secondary px-3 py-1 text-xs ring-1 ring-primary/40 hover:ring-destructive/60"
-                    >
-                      {gear.find((g) => g.id === row.componentId)?.name ?? row.componentId} ✕
-                    </button>
-                  ) : null,
+              <div className="flex flex-wrap items-center gap-2">
+                {rows.some((row) => row.channel === ch) ? (
+                  rows.map((row, idx) =>
+                    row.channel === ch ? (
+                      <button
+                        key={idx}
+                        onClick={() => removeRow(idx)}
+                        className="rounded-full bg-secondary px-3 py-1 text-xs ring-1 ring-primary/40 hover:ring-destructive/60"
+                      >
+                        {gear.find((g) => g.id === row.componentId)?.name ?? row.componentId} ✕
+                      </button>
+                    ) : null,
+                  )
+                ) : (
+                  <span className="text-xs text-muted-foreground">—</span>
                 )}
-                <select
-                  // Colors come from theme vars so the dropdown stays readable on
-                  // any custom YAML theme, light or dark (not hardcoded to dark).
-                  className="rounded-md border border-border bg-secondary px-2 py-1 text-xs text-foreground"
-                  value=""
-                  onChange={(e) => e.target.value && addRow(ch, Number(e.target.value))}
-                >
-                  <option value="" className="bg-popover text-popover-foreground">
-                    ＋ {t("layout.addfan")}
-                  </option>
-                  {fans.map((f) => (
-                    <option key={f.id} value={f.id} className="bg-popover text-popover-foreground">
-                      {f.name}
-                    </option>
-                  ))}
-                </select>
               </div>
             </div>
           ))}
