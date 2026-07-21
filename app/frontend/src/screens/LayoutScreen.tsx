@@ -27,8 +27,8 @@ function fansToChans(fans: LayoutFan[]): Chans {
 
 /**
  * Draws one controller's fans as a static board: each fan is its real top-view
- * photo sized to its LED-grid footprint, with the RGB LEDs as a faint ring on
- * top so the fan is recognizable (not abstract dots).
+ * photo sized to its footprint. No LED dots — the fan's own RGB region becomes
+ * live-reactive in Layer 2 (overlaying the actual per-LED colors from the engine).
  */
 function Board({ layout }: { layout: ControllerLayout }) {
   const { minX, minY, maxX, maxY } = layout.bounds;
@@ -40,7 +40,6 @@ function Board({ layout }: { layout: ControllerLayout }) {
       className="relative rounded-xl bg-muted/30 ring-1 ring-inset ring-white/10"
       style={{ width: (w + 2) * scale, height: (h + 2) * scale }}
     >
-      {/* Fan bodies: the actual product photo at each fan's footprint. */}
       {layout.fans.map((fan) =>
         fan.imageUrl ? (
           <img
@@ -58,22 +57,6 @@ function Board({ layout }: { layout: ControllerLayout }) {
             onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
           />
         ) : null,
-      )}
-      {/* LED ring overlaid on the fan, tinted by the active effect color. */}
-      {layout.fans.flatMap((fan) =>
-        fan.leds.map((led) => (
-          <span
-            key={`led-${fan.channel}-${fan.position}-${led.flatIndex}`}
-            className="absolute h-1.5 w-1.5 rounded-full"
-            style={{
-              left: (led.x - minX + 1) * scale,
-              top: (led.y - minY + 1) * scale,
-              background: "var(--glow)",
-              boxShadow: "0 0 5px var(--glow)",
-              opacity: 0.75,
-            }}
-          />
-        )),
       )}
     </div>
   );
