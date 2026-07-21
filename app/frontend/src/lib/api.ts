@@ -26,14 +26,38 @@ export interface UnsupportedDevice {
   reason: string;
 }
 
-/** Bundled gear (fans/strips) with SignalRGB asset photos, for the Devices screen. */
+/** Bundled gear (fans/strips) with SignalRGB asset photos + LED geometry. */
 export interface Component {
+  id: number;
   name: string;
   brand: string;
   type: string;
   ledCount: number;
+  width: number;
+  height: number;
+  ledCoordinates: [number, number][];
   imageUrl: string;
 }
+
+export interface LayoutLed { flatIndex: number; x: number; y: number }
+export interface LayoutFan {
+  componentId: number;
+  name: string;
+  imageUrl: string;
+  channel: number;
+  position: number;
+  originX: number;
+  originY: number;
+  width: number;
+  height: number;
+  leds: LayoutLed[];
+}
+export interface ControllerLayout {
+  controllerKey: string;
+  bounds: { minX: number; minY: number; maxX: number; maxY: number };
+  fans: LayoutFan[];
+}
+export interface Assignment { channel: number; position: number; componentId: number }
 
 async function json<T>(res: Response): Promise<T> {
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
@@ -52,4 +76,12 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(req),
     }).then(json<{ effect: string }>),
+  layout: () =>
+    fetch(`${BASE}/api/layout`).then(json<{ controllers: ControllerLayout[] }>),
+  setAssignments: (controllerKey: string, items: Assignment[]) =>
+    fetch(`${BASE}/api/layout/assignments?controllerKey=${encodeURIComponent(controllerKey)}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(items),
+    }).then(json<ControllerLayout>),
 };
