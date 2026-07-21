@@ -237,6 +237,12 @@ file name (loads + parses) as well as the current inline body for back-compat.
 - **Render button:** serializes the board + layers + keyframes + properties to the
   effect JSON schema, writes it to the effects dir, and it appears in the Effects
   screen.
+- **Interactive canvas (deferred from Layer 1):** fans get user-defined positions
+  (drag), individual selection, and *linking* — where linking means defining the
+  daisy-chain topology and order between fans (chain two fans = same chain, in the
+  linked order; leaving a fan unlinked = a single "unifan"). This replaces Layer 1's
+  auto side-by-side arrangement and per-channel count stepper with an explicit
+  visual wiring editor. Needs persisted per-fan x/y + chain links in the data model.
 
 ### Layer 3 verification
 
