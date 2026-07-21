@@ -34,15 +34,18 @@ public class DeviceRestController {
     private final HidService hid;
     private final ComponentProfileRepository components;
     private final com.fasterxml.jackson.databind.ObjectMapper mapper;
+    private final com.penumbra.layout.LayoutService layout;
 
     public DeviceRestController(DeviceManager deviceManager, EffectEngine engine, HidService hid,
                                 ComponentProfileRepository components,
-                                com.fasterxml.jackson.databind.ObjectMapper mapper) {
+                                com.fasterxml.jackson.databind.ObjectMapper mapper,
+                                com.penumbra.layout.LayoutService layout) {
         this.deviceManager = deviceManager;
         this.engine = engine;
         this.hid = hid;
         this.components = components;
         this.mapper = mapper;
+        this.layout = layout;
     }
 
     /** Raw dump of every attached HID device — use it to find an unknown controller's VID/PID. */
@@ -88,6 +91,41 @@ public class DeviceRestController {
                 "height", c.getHeight(),
                 "ledCoordinates", parseCoords(c.getLedCoordinatesJson()),
                 "imageUrl", c.getImageUrl() == null ? "" : c.getImageUrl())).toList();
+    }
+
+    @GetMapping("/layout")
+    public Map<String, Object> layout() {
+        List<Map<String, Object>> controllers = new java.util.ArrayList<>();
+        for (String key : layout.controllerKeys()) {
+            controllers.add(layoutDto(key, layout.layoutFor(key)));
+        }
+        return Map.of("controllers", controllers);
+    }
+
+    @PutMapping("/layout/assignments")
+    public Map<String, Object> setAssignments(@RequestParam String controllerKey,
+                                              @RequestBody List<com.penumbra.layout.LayoutService.AssignmentDto> items) {
+        layout.setAssignments(controllerKey, items);
+        return layoutDto(controllerKey, layout.layoutFor(controllerKey));
+    }
+
+    private static Map<String, Object> layoutDto(String key, com.penumbra.layout.LayoutBuilder.Layout l) {
+        List<Map<String, Object>> fans = l.fans().stream().map(f -> Map.<String, Object>of(
+                "componentId", f.componentId(),
+                "name", f.name(),
+                "imageUrl", f.imageUrl(),
+                "channel", f.channel(),
+                "position", f.position(),
+                "originX", f.originX(),
+                "originY", f.originY(),
+                "width", f.width(),
+                "height", f.height(),
+                "leds", f.leds().stream().map(p -> Map.<String, Object>of(
+                        "flatIndex", p.flatIndex(), "x", p.x(), "y", p.y())).toList())).toList();
+        return Map.of(
+                "controllerKey", key,
+                "bounds", Map.of("minX", l.minX(), "minY", l.minY(), "maxX", l.maxX(), "maxY", l.maxY()),
+                "fans", fans);
     }
 
     /** Recognized controllers Penumbra refuses to drive, with a reason for the UI to show. */
