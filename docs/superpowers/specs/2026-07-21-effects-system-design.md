@@ -50,7 +50,7 @@ canvas, so the editor is WYSIWYG. Parsed backend-side with `jackson-dataformat-y
 Three layers plus the runtime flow that ties them together.
 
 ```
-Editor (Layer 3)  ──Render──▶  effect.json  ──▶  Engine (Layer 2)
+Editor (Layer 3)  ──Render──▶  effect.yaml  ──▶  Engine (Layer 2)
    paints a 2-D canvas                              rasterizes canvas per frame
    against a fan board                                     │ samples per LED
         ▲                                                  ▼
