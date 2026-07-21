@@ -127,13 +127,19 @@ export default function LayoutScreen({ devices }: Props) {
                   ) : null,
                 )}
                 <select
-                  className="rounded-md border border-border bg-transparent px-2 py-1 text-xs"
+                  // Colors come from theme vars so the dropdown stays readable on
+                  // any custom YAML theme, light or dark (not hardcoded to dark).
+                  className="rounded-md border border-border bg-secondary px-2 py-1 text-xs text-foreground"
                   value=""
                   onChange={(e) => e.target.value && addRow(ch, Number(e.target.value))}
                 >
-                  <option value="">＋ {t("layout.addfan")}</option>
+                  <option value="" className="bg-popover text-popover-foreground">
+                    ＋ {t("layout.addfan")}
+                  </option>
                   {fans.map((f) => (
-                    <option key={f.id} value={f.id}>{f.name}</option>
+                    <option key={f.id} value={f.id} className="bg-popover text-popover-foreground">
+                      {f.name}
+                    </option>
                   ))}
                 </select>
               </div>
