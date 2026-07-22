@@ -14,21 +14,22 @@ function defaultFor(p: EffectProperty): unknown {
   return "";
 }
 
-// Persist the picked effect + its tweaked values so they survive navigation/restart.
-function loadProps(name: string): Record<string, unknown> | null {
-  try {
-    const raw = localStorage.getItem(`penumbra.fx.props.${name}`);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-function saveProps(name: string, props: Record<string, unknown>) {
-  try {
-    localStorage.setItem(`penumbra.fx.props.${name}`, JSON.stringify(props));
-  } catch {
-    /* ignore quota */
-  }
+/** Live strip of the active effect's canvas — the backend samples it for us. */
+function Preview() {
+  const [colors, setColors] = useState<string[]>([]);
+  useEffect(() => {
+    const tick = () => api.effectCanvas(64).then((r) => setColors(r.colors)).catch(() => {});
+    tick();
+    const id = setInterval(tick, 60);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="relative flex h-20 overflow-hidden rounded-xl ring-1 ring-inset ring-white/10">
+      {colors.map((c, i) => (
+        <div key={i} className="h-full flex-1" style={{ background: c }} />
+      ))}
+    </div>
+  );
 }
 
 export default function EffectsScreen() {
@@ -45,31 +46,28 @@ export default function EffectsScreen() {
   const current = useMemo(() => list.find((e) => e.name === active) ?? null, [list, active]);
 
   const select = (e: EffectInfo) => {
-    const saved = loadProps(e.name);
     const initial: Record<string, unknown> = {};
-    for (const p of e.properties) initial[p.key] = saved?.[p.key] ?? defaultFor(p);
+    for (const p of e.properties) initial[p.key] = defaultFor(p);
     setActive(e.name);
     setProps(initial);
-    localStorage.setItem("penumbra.fx.active", e.name);
-    saveProps(e.name, initial);
     api.setEffect({ name: e.name, props: initial }).catch(() => {});
   };
 
   const setProp = (key: string, value: unknown) => {
     const next = { ...props, [key]: value };
     setProps(next);
-    if (active) {
-      saveProps(active, next);
-      api.setEffect({ name: active, props: next }).catch(() => {});
-    }
+    if (active) api.setEffect({ name: active, props: next }).catch(() => {});
   };
 
-  // Restore the last-used effect + its saved values once the list arrives.
+  // Restore the effect the backend already has active (persisted in its config).
   useEffect(() => {
     if (list.length === 0 || active) return;
-    const savedName = localStorage.getItem("penumbra.fx.active");
-    const e = list.find((x) => x.name === savedName);
-    if (e) select(e);
+    api.activeEffect().then((a) => {
+      if (list.some((x) => x.name === a.name)) {
+        setActive(a.name);
+        setProps(a.props ?? {});
+      }
+    }).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list]);
 
@@ -77,7 +75,11 @@ export default function EffectsScreen() {
 
   return (
     <div className="space-y-6">
-      <div className="animate-rise">
+      <Card className="animate-rise p-4">
+        <Preview />
+      </Card>
+
+      <div className="animate-rise" style={{ animationDelay: "0.04s" }}>
         <SearchBar value={query} onChange={setQuery} placeholder={t("effects.search")} />
       </div>
 
