@@ -54,25 +54,27 @@ public class LayoutService {
 
         Map<Integer, List<LayoutBuilder.FanSpec>> chains = new TreeMap<>();
         for (ChannelAssignment a : assignments.findByControllerKeyOrderByChannelAscPositionAsc(controllerKey)) {
-            LayoutBuilder.FanSpec spec = specFor(a.getComponentId());
+            LayoutBuilder.FanSpec spec = specFor(a);
             if (spec == null) continue;
             chains.computeIfAbsent(a.getChannel(), k -> new ArrayList<>()).add(spec);
         }
         return LayoutBuilder.build(device.getLedsPerChannel(), chains);
     }
 
-    /** Flat LED index → normalized (nx, ny) in [0,1] on the effect canvas. */
+    /**
+     * Flat LED index → normalized (nx, ny) in [0,1] across the effect canvas.
+     * Normalized against the canvas itself, never the fans' bounding box: a fan
+     * that covers a corner of the canvas must only ever see that corner of the
+     * effect, exactly as SignalRGB does it.
+     */
     public Map<Integer, double[]> worldMapFor(String controllerKey) {
         LayoutBuilder.Layout l = layoutFor(controllerKey);
         Map<Integer, double[]> map = new java.util.HashMap<>();
-        if (l.fans().isEmpty()) return map;
-        double spanX = l.maxX() - l.minX();
-        double spanY = l.maxY() - l.minY();
         for (LayoutBuilder.FanPlacement fan : l.fans()) {
             for (LayoutBuilder.LedPoint p : fan.leds()) {
-                double nx = spanX <= 0 ? 0.5 : (p.x() - l.minX()) / spanX;
-                double ny = spanY <= 0 ? 0.5 : (p.y() - l.minY()) / spanY;
-                map.put(p.flatIndex(), new double[] { nx, ny });
+                map.put(p.flatIndex(), new double[] {
+                        p.x() / LayoutBuilder.CANVAS_W,
+                        p.y() / LayoutBuilder.CANVAS_H });
             }
         }
         return map;
@@ -87,15 +89,26 @@ public class LayoutService {
         version.incrementAndGet();
     }
 
-    private LayoutBuilder.FanSpec specFor(Long componentId) {
-        Optional<ComponentProfile> found = components.findById(componentId);
+    /** Drop a fan at (x, y) on the canvas. Null x/y puts it back on auto-arrange. */
+    public void setPlacement(String controllerKey, int channel, int position, Double x, Double y) {
+        assignments.findByControllerKeyAndChannelAndPosition(controllerKey, channel, position)
+                .ifPresent(a -> {
+                    a.setCanvasX(x);
+                    a.setCanvasY(y);
+                    assignments.save(a);
+                    version.incrementAndGet();
+                });
+    }
+
+    private LayoutBuilder.FanSpec specFor(ChannelAssignment a) {
+        Optional<ComponentProfile> found = components.findById(a.getComponentId());
         if (found.isEmpty()) return null;
         ComponentProfile c = found.get();
         int[][] coords = parseCoords(c.getLedCoordinatesJson());
         String name = c.getDisplayName() == null ? String.valueOf(c.getProductName()) : c.getDisplayName();
         return new LayoutBuilder.FanSpec(c.getId(), name,
                 c.getImageUrl() == null ? "" : c.getImageUrl(),
-                c.getWidth(), c.getHeight(), coords);
+                c.getWidth(), c.getHeight(), coords, a.getCanvasX(), a.getCanvasY());
     }
 
     private int[][] parseCoords(String json) {
