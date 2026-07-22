@@ -32,15 +32,19 @@ public record EffectSpec(
             Double max,
             List<String> values) { }
 
-    /** One parametric paint op. Unused fields are null for a given type. */
+    /**
+     * One parametric paint op. Unused fields are null for a given type.
+     * Numeric fields are Strings so they can hold a literal ("0.3") or a
+     * property reference ("@speed") — the renderer resolves either.
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Layer(
             String type,
             String color,
             String color2,
             String axis,
-            Double band,
-            Double speed,
-            Double spread,
-            Double center) { }
+            String band,
+            String speed,
+            String spread,
+            String center) { }
 }
