@@ -12,11 +12,23 @@ export interface Device {
   totalLeds: number;
 }
 
-export interface EffectRequest {
-  type: "rainbow" | "static" | "breathing";
-  color?: string;
-  speed?: number;
-  spread?: number;
+export interface EffectProperty {
+  key: string;
+  label: string;
+  type: "color" | "number" | "boolean" | "combobox" | string;
+  default: unknown;
+  min: number | null;
+  max: number | null;
+  values: string[] | null;
+}
+export interface EffectInfo {
+  name: string;
+  description: string;
+  properties: EffectProperty[];
+}
+export interface ControllerFrame {
+  controllerKey: string;
+  colors: string[];
 }
 
 /** A controller detected but not drivable yet — shown to the user as a warning. */
@@ -70,12 +82,15 @@ export const api = {
   components: () => fetch(`${BASE}/api/components`).then(json<Component[]>),
   unsupported: () => fetch(`${BASE}/api/unsupported`).then(json<UnsupportedDevice[]>),
   rescan: () => fetch(`${BASE}/api/rescan`, { method: "POST" }).then(json<Device[]>),
-  setEffect: (req: EffectRequest) =>
+  effects: () => fetch(`${BASE}/api/effects`).then(json<EffectInfo[]>),
+  setEffect: (body: { name?: string; yaml?: string; props?: Record<string, unknown> }) =>
     fetch(`${BASE}/api/effect`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req),
+      body: JSON.stringify(body),
     }).then(json<{ effect: string }>),
+  frame: () =>
+    fetch(`${BASE}/api/frame`).then(json<{ controllers: ControllerFrame[] }>),
   layout: () =>
     fetch(`${BASE}/api/layout`).then(json<{ controllers: ControllerLayout[] }>),
   setAssignments: (controllerKey: string, items: Assignment[]) =>
