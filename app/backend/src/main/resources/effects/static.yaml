@@ -1,0 +1,7 @@
+name: static
+description: One solid color.
+canvas: { width: 8, height: 8 }
+properties:
+  - { key: color, label: Color, type: color, default: "#009bde" }
+layers:
+  - { type: solid, color: "@color" }
