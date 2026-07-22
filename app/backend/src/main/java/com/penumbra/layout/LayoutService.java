@@ -27,6 +27,8 @@ public class LayoutService {
     private final ChannelAssignmentRepository assignments;
     private final ComponentProfileRepository components;
     private final ObjectMapper mapper;
+    private final java.util.concurrent.atomic.AtomicInteger version =
+            new java.util.concurrent.atomic.AtomicInteger();
 
     public LayoutService(DeviceManager deviceManager, ChannelAssignmentRepository assignments,
                          ComponentProfileRepository components, ObjectMapper mapper) {
@@ -39,6 +41,8 @@ public class LayoutService {
     public List<String> controllerKeys() {
         return deviceManager.devices().stream().map(DetectedDevice::id).toList();
     }
+
+    public int version() { return version.get(); }
 
     public LayoutBuilder.Layout layoutFor(String controllerKey) {
         DetectedDevice device = deviceManager.devices().stream()
@@ -57,12 +61,30 @@ public class LayoutService {
         return LayoutBuilder.build(device.getLedsPerChannel(), chains);
     }
 
+    /** Flat LED index → normalized (nx, ny) in [0,1] on the effect canvas. */
+    public Map<Integer, double[]> worldMapFor(String controllerKey) {
+        LayoutBuilder.Layout l = layoutFor(controllerKey);
+        Map<Integer, double[]> map = new java.util.HashMap<>();
+        if (l.fans().isEmpty()) return map;
+        double spanX = l.maxX() - l.minX();
+        double spanY = l.maxY() - l.minY();
+        for (LayoutBuilder.FanPlacement fan : l.fans()) {
+            for (LayoutBuilder.LedPoint p : fan.leds()) {
+                double nx = spanX <= 0 ? 0.5 : (p.x() - l.minX()) / spanX;
+                double ny = spanY <= 0 ? 0.5 : (p.y() - l.minY()) / spanY;
+                map.put(p.flatIndex(), new double[] { nx, ny });
+            }
+        }
+        return map;
+    }
+
     public void setAssignments(String controllerKey, List<AssignmentDto> items) {
         assignments.deleteByControllerKey(controllerKey);
         for (AssignmentDto it : items) {
             if (it.componentId() == null) continue;
             assignments.save(new ChannelAssignment(controllerKey, it.channel(), it.position(), it.componentId()));
         }
+        version.incrementAndGet();
     }
 
     private LayoutBuilder.FanSpec specFor(Long componentId) {
