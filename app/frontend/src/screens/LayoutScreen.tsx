@@ -4,6 +4,7 @@ import SearchBar from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useT } from "@/lib/i18n";
+import LayoutCanvas from "./LayoutCanvas";
 
 interface Props {
   devices: Device[];
@@ -23,136 +24,6 @@ function fansToChans(fans: LayoutFan[]): Chans {
     m[f.channel].count += 1;
   }
   return m;
-}
-
-/**
- * One fan: its top-view photo, with the RGB strip already in the photo recolored
- * by the live LEDs. No dots — each LED paints the cell it owns, and `color`
- * blending keeps the photo's own shading so it reads as the strip lighting up.
- *
- * The cells are laid over the photo's *displayed* rect, not the container:
- * object-contain letterboxes the image, and a component's LED grid (11x7 for a
- * CS120) does not match the photo's aspect, so the grid is stretched onto
- * wherever the photo actually landed.
- */
-function Fan({
-  fan,
-  colors,
-  zoom,
-  onDrop,
-}: {
-  fan: LayoutFan;
-  colors: string[];
-  zoom: number;
-  onDrop: (x: number, y: number) => void;
-}) {
-  const [photo, setPhoto] = useState<{ l: number; t: number; w: number; h: number } | null>(null);
-  const [drag, setDrag] = useState<{ x: number; y: number } | null>(null);
-
-  // object-contain letterboxes the photo, so measure where it actually landed.
-  const fit = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
-    const bw = img.clientWidth, bh = img.clientHeight;
-    const ar = img.naturalWidth / img.naturalHeight;
-    const w = ar > bw / bh ? bw : bh * ar;
-    const h = ar > bw / bh ? bw / ar : bh;
-    setPhoto({ l: (bw - w) / 2, t: (bh - h) / 2, w, h });
-  };
-
-  const startDrag = (e: React.PointerEvent) => {
-    e.preventDefault();
-    e.currentTarget.setPointerCapture(e.pointerId);
-    const x0 = e.clientX, y0 = e.clientY;
-    const ox = fan.originX, oy = fan.originY;
-    setDrag({ x: ox, y: oy });
-    const move = (ev: PointerEvent) =>
-      setDrag({ x: ox + (ev.clientX - x0) / zoom, y: oy + (ev.clientY - y0) / zoom });
-    const up = (ev: PointerEvent) => {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", up);
-      setDrag(null);
-      onDrop(ox + (ev.clientX - x0) / zoom, oy + (ev.clientY - y0) / zoom);
-    };
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", up);
-  };
-
-  return (
-    <div
-      onPointerDown={startDrag}
-      className="absolute cursor-grab touch-none select-none active:cursor-grabbing"
-      style={{
-        left: (drag?.x ?? fan.originX) * zoom,
-        top: (drag?.y ?? fan.originY) * zoom,
-        width: fan.width * zoom,
-        height: fan.height * zoom,
-      }}
-      title={`${fan.name} — ch ${fan.channel + 1} #${fan.position + 1}`}
-    >
-      {fan.imageUrl ? (
-        <img
-          src={fan.imageUrl}
-          alt={fan.name}
-          draggable={false}
-          onLoad={fit}
-          className="pointer-events-none h-full w-full object-contain"
-          onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
-        />
-      ) : null}
-      {photo &&
-        fan.leds.map((led) => {
-          const c = colors[led.flatIndex];
-          if (!c || c === "#000000") return null;
-          return (
-            <span
-              key={led.flatIndex}
-              className="pointer-events-none absolute mix-blend-color"
-              style={{
-                left: photo.l + (led.cx / fan.cols) * photo.w,
-                top: photo.t + (led.cy / fan.rows) * photo.h,
-                width: photo.w / fan.cols,
-                height: photo.h / fan.rows,
-                background: c,
-              }}
-            />
-          );
-        })}
-    </div>
-  );
-}
-
-/**
- * The effect canvas with the fans sitting on it. Bounds come from the server and
- * are the canvas itself (0,0 - 320,200), not the fans: where a fan sits decides
- * which part of the effect it shows, so the empty space around them is real.
- */
-function Board({
-  layout,
-  colors,
-  onMove,
-}: {
-  layout: ControllerLayout;
-  colors: string[];
-  onMove: (fan: LayoutFan, x: number, y: number) => void;
-}) {
-  const { maxX, maxY } = layout.bounds;
-  const zoom = 2.4; // screen px per canvas px
-  return (
-    <div
-      className="relative overflow-hidden rounded-xl bg-black/40 ring-1 ring-inset ring-white/10"
-      style={{ width: maxX * zoom, height: maxY * zoom }}
-    >
-      {layout.fans.map((fan) => (
-        <Fan
-          key={`fan-${fan.channel}-${fan.position}`}
-          fan={fan}
-          colors={colors}
-          zoom={zoom}
-          onDrop={(x, y) => onMove(fan, x, y)}
-        />
-      ))}
-    </div>
-  );
 }
 
 export default function LayoutScreen({ devices }: Props) {
@@ -231,6 +102,9 @@ export default function LayoutScreen({ devices }: Props) {
   };
   const setCount = (channel: number, count: number) =>
     persist({ ...chans, [channel]: { ...chans[channel], count } });
+  /** Swap which fan model sits on a channel, keeping how many are chained. */
+  const setModel = (channel: number, componentId: number) =>
+    persist({ ...chans, [channel]: { componentId, count: chans[channel]?.count ?? 1 } });
   const clearChannel = (channel: number) => {
     const next = { ...chans };
     delete next[channel];
@@ -250,10 +124,12 @@ export default function LayoutScreen({ devices }: Props) {
   return (
     <div className="space-y-6">
       {layout && layout.fans.length > 0 && (
-        <Card className="animate-rise overflow-auto p-5">
-          <Board
+        <Card className="animate-rise p-2">
+          <LayoutCanvas
             layout={layout}
             colors={colors}
+            gear={gear}
+            onChangeModel={setModel}
             onMove={(fan, x, y) => {
               if (!controllerKey) return;
               api
