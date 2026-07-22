@@ -102,9 +102,6 @@ export default function LayoutScreen({ devices }: Props) {
   };
   const setCount = (channel: number, count: number) =>
     persist({ ...chans, [channel]: { ...chans[channel], count } });
-  /** Swap which fan model sits on a channel, keeping how many are chained. */
-  const setModel = (channel: number, componentId: number) =>
-    persist({ ...chans, [channel]: { componentId, count: chans[channel]?.count ?? 1 } });
   const clearChannel = (channel: number) => {
     const next = { ...chans };
     delete next[channel];
@@ -128,13 +125,22 @@ export default function LayoutScreen({ devices }: Props) {
           <LayoutCanvas
             layout={layout}
             colors={colors}
-            gear={gear}
-            onChangeModel={setModel}
-            onMove={(fan, x, y) => {
+            onChangeModel={(channel, svg) => {
               if (!controllerKey) return;
-              api
-                .setPlacement(controllerKey, fan.channel, fan.position, x, y)
-                .then(setLayout)
+              api.setSvgModel(controllerKey, channel, svg).then(setLayout).catch(() => {});
+            }}
+            onMove={(moves) => {
+              if (!controllerKey || moves.length === 0) return;
+              // Persist every dragged fan, then take the last response as truth.
+              moves
+                .reduce(
+                  (chain, m) =>
+                    chain.then(() =>
+                      api.setPlacement(controllerKey, m.fan.channel, m.fan.position, m.x, m.y),
+                    ),
+                  Promise.resolve() as Promise<unknown>,
+                )
+                .then((l) => setLayout(l as ControllerLayout))
                 .catch(() => {});
             }}
           />
@@ -146,7 +152,7 @@ export default function LayoutScreen({ devices }: Props) {
 
         {/* Suggestions: fans matching the search, with a thumbnail. Click = add to every channel. */}
         {query.trim() && (
-          <div className="mt-3 overflow-hidden rounded-lg ring-1 ring-inset ring-white/10">
+          <div className="mt-3 overflow-hidden rounded-lg ring-1 ring-inset ring-border">
             {fans.length === 0 ? (
               <div className="px-3 py-2 text-xs text-muted-foreground">{t("layout.nofan")}</div>
             ) : (
