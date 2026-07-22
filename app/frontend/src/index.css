@@ -118,3 +118,47 @@
     .animate-rise, .animate-pulse-slow, .animate-sweep { animation: none; }
   }
 }
+
+/* React Flow ships its own light-themed stylesheet. Remap every colour it uses
+   onto the app's tokens so the canvas toolbar, minimap and selection follow
+   whatever theme YAML is loaded instead of clashing with it. */
+.react-flow {
+  --xy-background-color: transparent;
+
+  --xy-controls-button-background-color: var(--card);
+  --xy-controls-button-background-color-hover: var(--muted);
+  --xy-controls-button-color: var(--foreground);
+  --xy-controls-button-color-hover: var(--foreground);
+  --xy-controls-button-border-color: var(--border);
+  --xy-controls-box-shadow: 0 2px 10px color-mix(in oklab, var(--background) 70%, transparent);
+
+  --xy-minimap-background-color: var(--card);
+  --xy-minimap-mask-background-color: color-mix(in oklab, var(--background) 65%, transparent);
+  --xy-minimap-node-background-color: var(--muted-foreground);
+
+  --xy-selection-background-color: color-mix(in oklab, var(--primary) 12%, transparent);
+  --xy-selection-border: 1px dashed var(--primary);
+
+  --xy-node-color: var(--foreground);
+  --xy-node-background-color: transparent;
+  --xy-node-border: none;
+  --xy-node-boxshadow-hover: none;
+  --xy-node-boxshadow-selected: none;
+}
+
+/* Our fan nodes draw their own body; strip React Flow's default node chrome. */
+.react-flow__node-fan,
+.react-flow__node-ghost,
+.react-flow__node-channel {
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+.react-flow__minimap,
+.react-flow__controls {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
