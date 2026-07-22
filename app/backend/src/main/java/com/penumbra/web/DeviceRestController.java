@@ -3,6 +3,7 @@ package com.penumbra.web;
 import com.penumbra.device.DetectedDevice;
 import com.penumbra.device.DeviceManager;
 import com.penumbra.effect.*;
+import com.penumbra.effect.spec.EffectSpec;
 import com.penumbra.hid.HidService;
 import com.penumbra.profile.ComponentProfileRepository;
 import org.springframework.web.bind.annotation.*;
@@ -35,17 +36,20 @@ public class DeviceRestController {
     private final ComponentProfileRepository components;
     private final com.fasterxml.jackson.databind.ObjectMapper mapper;
     private final com.penumbra.layout.LayoutService layout;
+    private final EffectStore effects;
 
     public DeviceRestController(DeviceManager deviceManager, EffectEngine engine, HidService hid,
                                 ComponentProfileRepository components,
                                 com.fasterxml.jackson.databind.ObjectMapper mapper,
-                                com.penumbra.layout.LayoutService layout) {
+                                com.penumbra.layout.LayoutService layout,
+                                EffectStore effects) {
         this.deviceManager = deviceManager;
         this.engine = engine;
         this.hid = hid;
         this.components = components;
         this.mapper = mapper;
         this.layout = layout;
+        this.effects = effects;
     }
 
     /** Raw dump of every attached HID device — use it to find an unknown controller's VID/PID. */
@@ -151,21 +155,57 @@ public class DeviceRestController {
         return out;
     }
 
-    /** body: {"type":"rainbow","color":"#009bde","speed":0.2,"spread":1.0} */
+    @GetMapping("/effects")
+    public List<Map<String, Object>> effects() {
+        return effects.all().stream().map(DeviceRestController::effectDto).toList();
+    }
+
+    /** body: {"name":"side-to-side","props":{...}} or {"yaml":"...","props":{...}} */
     @PostMapping("/effect")
-    public Map<String, Object> setEffect(@RequestBody EffectRequest req) {
-        engine.setEffect(build(req));
+    public Map<String, Object> setEffect(@RequestBody Map<String, Object> body) {
+        EffectSpec spec;
+        Object yaml = body.get("yaml");
+        if (yaml instanceof String s && !s.isBlank()) {
+            spec = effects.parse(s);
+        } else {
+            spec = effects.byName(String.valueOf(body.get("name")));
+        }
+        @SuppressWarnings("unchecked")
+        Map<String, Object> props = body.get("props") instanceof Map<?, ?> m
+                ? (Map<String, Object>) m : Map.of();
+        engine.setEffect(spec, props);
         return Map.of("effect", engine.activeName());
     }
 
-    private Effect build(EffectRequest req) {
-        int rgb = parseHex(req.color());
-        double speed = req.speed() == null ? 0.2 : req.speed();
-        return switch (req.type() == null ? "rainbow" : req.type()) {
-            case "static" -> new StaticEffect(rgb);
-            case "breathing" -> new BreathingEffect(rgb, speed);
-            default -> new RainbowEffect(speed, req.spread() == null ? 1.0 : req.spread());
-        };
+    @GetMapping("/frame")
+    public Map<String, Object> frame() {
+        List<Map<String, Object>> controllers = new java.util.ArrayList<>();
+        for (String key : layout.controllerKeys()) {
+            int[] colors = engine.frameFor(key);
+            List<String> hex = new java.util.ArrayList<>(colors.length);
+            for (int c : colors) hex.add(String.format("#%06X", c & 0xFFFFFF));
+            controllers.add(Map.of("controllerKey", key, "colors", hex));
+        }
+        return Map.of("controllers", controllers);
+    }
+
+    private static Map<String, Object> effectDto(EffectSpec e) {
+        List<Map<String, Object>> props = (e.properties() == null ? List.<EffectSpec.Property>of() : e.properties())
+                .stream().map(p -> {
+                    Map<String, Object> m = new java.util.LinkedHashMap<>();
+                    m.put("key", p.key());
+                    m.put("label", p.label());
+                    m.put("type", p.type());
+                    m.put("default", p.def());
+                    m.put("min", p.min());
+                    m.put("max", p.max());
+                    m.put("values", p.values());
+                    return m;
+                }).toList();
+        return Map.of(
+                "name", e.name(),
+                "description", e.description() == null ? "" : e.description(),
+                "properties", props);
     }
 
     private static Map<String, Object> toDto(DetectedDevice d) {
@@ -178,11 +218,6 @@ public class DeviceRestController {
                 "totalLeds", d.getTotalLeds());
     }
 
-    private static int parseHex(String hex) {
-        if (hex == null) return 0x009bde;
-        return (int) Long.parseLong(hex.replace("#", ""), 16) & 0xFFFFFF;
-    }
-
     /** Parse a component's "[[x,y],…]" LedCoordinates JSON into a list; [] on any problem. */
     private List<List<Integer>> parseCoords(String json) {
         if (json == null || json.isBlank()) return List.of();
@@ -193,6 +228,4 @@ public class DeviceRestController {
             return List.of();
         }
     }
-
-    public record EffectRequest(String type, String color, Double speed, Double spread) { }
 }
