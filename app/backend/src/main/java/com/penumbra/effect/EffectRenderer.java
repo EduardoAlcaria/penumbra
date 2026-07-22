@@ -60,6 +60,19 @@ public class EffectRenderer {
                 double br = 0.5 * (1 - Math.cos(t * speed * 2 * Math.PI));
                 for (int i = 0; i < px.length; i++) px[i] = scale(px[i], br);
             }
+            case "wipe" -> {
+                // Two colors washing back and forth: a boundary sweeps across on a
+                // triangle wave, color on the left, color2 on the right. SignalRGB's
+                // "side to side" in spirit — full color, not a thin band.
+                int c1 = resolveColor(l.color(), props, 0xFFFFFF);
+                int c2 = resolveColor(l.color2(), props, 0x000000);
+                double phase = (t * speed) % 2.0;
+                double center = phase < 1.0 ? phase : 2.0 - phase; // 0 → 1 → 0
+                for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) {
+                    double pos = axisPos(x, y, w, h, xAxis);
+                    px[y * w + x] = pos <= center ? c1 : c2;
+                }
+            }
             default -> { /* unknown layer type: ignore, keep canvas as-is */ }
         }
     }
