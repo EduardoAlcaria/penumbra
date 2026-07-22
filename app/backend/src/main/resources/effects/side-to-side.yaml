@@ -1,10 +1,9 @@
 name: side-to-side
-description: A color band sweeps left to right across the setup.
-canvas: { width: 64, height: 8 }
+description: Two colors wash back and forth across the setup.
+canvas: { width: 240, height: 8 }
 properties:
-  - { key: base, label: Base color, type: color, default: "#082EFF" }
-  - { key: band, label: Band color, type: color, default: "#FF03AF" }
+  - { key: color1, label: Color 1, type: color, default: "#082EFF" }
+  - { key: color2, label: Color 2, type: color, default: "#FF03AF" }
   - { key: speed, label: Speed, type: number, default: 0.4, min: 0, max: 3 }
 layers:
-  - { type: solid, color: "@base" }
-  - { type: sweep, axis: x, color: "@band", band: 0.3, speed: "@speed" }
+  - { type: wipe, axis: x, color: "@color1", color2: "@color2", speed: "@speed" }
