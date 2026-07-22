@@ -32,15 +32,25 @@ public final class LayoutBuilder {
      */
     public static final double FAN_SIZE = 40;
 
-    /** Between channels only. Fans daisy-chained on one channel sit flush. */
+    /** Between channels. */
     private static final double GAP = 8;
+
+    /**
+     * Between fans daisy-chained on one channel. Small but not zero: flush fans
+     * merge their lit frames into one blob and stop reading as separate units.
+     */
+    private static final double CHAIN_GAP = 4;
 
     private LayoutBuilder() { }
 
-    /** x/y are an explicit canvas placement for this fan; null means auto-arrange. */
+    /**
+     * x/y are an explicit canvas placement for this fan; null means auto-arrange.
+     * svgModel names the artwork the UI draws it with; null means pick from the
+     * component's LED layout.
+     */
     public record FanSpec(long componentId, String name, String imageUrl,
                           int width, int height, int[][] coords,
-                          Double x, Double y) { }
+                          Double x, Double y, String svgModel) { }
 
     /** x/y are canvas pixels; cx/cy are the LED's cell in the component's own grid. */
     public record LedPoint(int flatIndex, double x, double y, int cx, int cy) { }
@@ -49,7 +59,7 @@ public final class LayoutBuilder {
     public record FanPlacement(long componentId, String name, String imageUrl,
                                int channel, int position,
                                double originX, double originY, double width, double height,
-                               int cols, int rows, List<LedPoint> leds) { }
+                               int cols, int rows, String svgModel, List<LedPoint> leds) { }
 
     public record Layout(List<FanPlacement> fans,
                          double minX, double minY, double maxX, double maxY) { }
@@ -74,9 +84,9 @@ public final class LayoutBuilder {
                 FanSpec fan = chain.get(p);
                 autos.add(new Auto(ch, p, fan, globalOffset + localFlat, x, y));
                 localFlat += fan.coords().length;
-                x += FAN_SIZE; // flush: a daisy chain reads as one block of fans
-                autoMaxX = Math.max(autoMaxX, x);
+                autoMaxX = Math.max(autoMaxX, x + FAN_SIZE);
                 autoMaxY = Math.max(autoMaxY, y + FAN_SIZE);
+                x += FAN_SIZE + CHAIN_GAP;
             }
         }
         if (autos.isEmpty()) return new Layout(List.of(), 0, 0, CANVAS_W, CANVAS_H);
@@ -105,7 +115,7 @@ public final class LayoutBuilder {
             fans.add(new FanPlacement(fan.componentId(), fan.name(), fan.imageUrl(),
                     a.channel(), a.position(), originX, originY,
                     FAN_SIZE, FAN_SIZE,
-                    fan.width(), fan.height(), leds));
+                    fan.width(), fan.height(), fan.svgModel(), leds));
         }
         // Bounds are the canvas, not the fans: the effect always spans the canvas.
         return new Layout(fans, 0, 0, CANVAS_W, CANVAS_H);
