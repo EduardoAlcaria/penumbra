@@ -37,7 +37,7 @@ class EffectRendererTest {
     void sweepPaintsOnlyTheBandLeavingTheBaseElsewhere() {
         // Base red, a blue vertical band of width 0.25 centered at x=0 (t=0,speed=0).
         EffectSpec.Layer sweep =
-                new EffectSpec.Layer("sweep", "#0000FF", null, "x", 0.25, 0.0, null, null);
+                new EffectSpec.Layer("sweep", "#0000FF", null, "x", "0.25", "0.0", null, null);
         EffectSpec spec = new EffectSpec("t", "", new EffectSpec.Canvas(8, 1),
                 List.of(), List.of(solid("#FF0000"), sweep));
         int[] px = renderer.render(spec, Map.of(), 0L);
