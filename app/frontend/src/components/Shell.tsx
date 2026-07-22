@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api, type Device, type EffectRequest, type UnsupportedDevice } from "@/lib/api";
+import { api, type Device, type UnsupportedDevice } from "@/lib/api";
 import Sidebar, { type Screen } from "@/components/Sidebar";
 import EffectsScreen from "@/screens/EffectsScreen";
 import DevicesScreen from "@/screens/DevicesScreen";
@@ -49,9 +49,6 @@ export default function Shell() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [unsupported, setUnsupported] = useState<UnsupportedDevice[]>([]);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
-  const [effect, setEffect] = useState<EffectRequest["type"]>("rainbow");
-  const [color, setColor] = useState("#009bde");
-  const [speed, setSpeed] = useState(0.2);
   const [error, setError] = useState<string | null>(null);
   const [engineUp, setEngineUp] = useState(false);
   const [splash, setSplash] = useState<"boot" | "fading" | "done">("boot");
@@ -100,13 +97,6 @@ export default function Shell() {
     return () => clearTimeout(t);
   }, [splash]);
 
-  const apply = (patch: Partial<EffectRequest>) => {
-    const next = { type: effect, color, speed, ...patch };
-    setEffect(next.type!);
-    if (patch.color !== undefined) setColor(patch.color);
-    if (patch.speed !== undefined) setSpeed(patch.speed);
-    api.setEffect(next).catch((e) => setError(String(e)));
-  };
 
   const warnings = unsupported.filter((u) => !dismissed.has(u.id));
   const dismissWarnings = () =>
@@ -140,9 +130,7 @@ export default function Shell() {
           </h1>
           {/* key remounts the screen so the rise animation plays on navigation */}
           <div key={screen}>
-            {screen === "effects" && (
-              <EffectsScreen effect={effect} color={color} speed={speed} apply={apply} />
-            )}
+            {screen === "effects" && <EffectsScreen />}
             {screen === "devices" && <DevicesScreen devices={devices} unsupported={unsupported} />}
             {screen === "layout" && <LayoutScreen devices={devices} />}
             {screen === "settings" && <SettingsScreen />}
