@@ -80,7 +80,7 @@ public class EffectEngine {
         String[] out = new String[n];
         for (int i = 0; i < n; i++) {
             double nx = n == 1 ? 0.0 : i / (double) (n - 1);
-            int rgb = EffectRenderer.sampleBilinear(canvas, w, h, nx, 0.5);
+            int rgb = EffectRenderer.sample(canvas, w, h, nx, 0.5);
             out[i] = String.format("#%06X", rgb & 0xFFFFFF);
         }
         return out;
@@ -151,7 +151,7 @@ public class EffectEngine {
                 int rgb;
                 if (xy != null) {
                     // Real fan LED: sample the effect at its position on the canvas.
-                    rgb = EffectRenderer.sampleBilinear(canvas, w, h, xy[0], xy[1]);
+                    rgb = EffectRenderer.sample(canvas, w, h, xy[0], xy[1]);
                 } else if (configured) {
                     // Phantom LED on a configured controller (unassigned channel or
                     // index past the real fans) — keep it dark, like SignalRGB drives
@@ -161,7 +161,7 @@ public class EffectEngine {
                     // No layout at all: light everything on a 1-D slice so an
                     // unconfigured controller still shows the effect.
                     double nx = total == 1 ? 0.0 : i / (double) (total - 1);
-                    rgb = EffectRenderer.sampleBilinear(canvas, w, h, nx, 0.5);
+                    rgb = EffectRenderer.sample(canvas, w, h, nx, 0.5);
                 }
                 frame[i] = rgb;
                 device.setLed(i, rgb);
