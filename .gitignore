@@ -4,9 +4,10 @@
 # Session scratch
 /.remember/
 
-# Backend build + local DB
+# Backend build + local DB + runtime state (active effect, etc.)
 /app/backend/target/
 /app/backend/data/
+/app/backend/config/
 *.mv.db
 *.trace.db
 
