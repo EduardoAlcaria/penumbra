@@ -43,10 +43,13 @@ public class EffectRenderer {
                 }
             }
             case "rainbow" -> {
-                double spread = resolveNumber(l.spread(), props, 1.0);
+                // Faithful to SignalRGB Rainbow: hue(deg) = pixel - offset, offset
+                // scrolls speed/10 deg per frame at 60fps = 6*speed deg/second.
+                double offset = t * 6.0 * speed;
                 for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) {
-                    double pos = axisPos(x, y, w, h, xAxis);
-                    px[y * w + x] = Effect.hsv(pos * spread + t * speed, 1.0, 1.0);
+                    double px360 = xAxis ? x : y;
+                    double hueDeg = (((px360 - offset) % 360) + 360) % 360;
+                    px[y * w + x] = Effect.hsv(hueDeg / 360.0, 1.0, 1.0);
                 }
             }
             case "gradient" -> {
@@ -66,7 +69,9 @@ public class EffectRenderer {
                 // OPPOSITE edge — alternating color AND side each pass.
                 int c1 = resolveColor(l.color(), props, 0xFFFFFF);
                 int c2 = resolveColor(l.color2(), props, 0x000000);
-                double phase = t * speed;
+                // SignalRGB sweeps 320px at speed/10 px per frame at 60fps, so one
+                // full pass takes 320/(6*speed) = 53.33/speed seconds.
+                double phase = t * speed / 53.333;
                 int wipe = (int) Math.floor(phase);
                 double progress = phase - wipe;
                 boolean even = (wipe & 1) == 0;
