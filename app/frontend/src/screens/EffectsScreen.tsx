@@ -14,6 +14,23 @@ function defaultFor(p: EffectProperty): unknown {
   return "";
 }
 
+// Persist the picked effect + its tweaked values so they survive navigation/restart.
+function loadProps(name: string): Record<string, unknown> | null {
+  try {
+    const raw = localStorage.getItem(`penumbra.fx.props.${name}`);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+function saveProps(name: string, props: Record<string, unknown>) {
+  try {
+    localStorage.setItem(`penumbra.fx.props.${name}`, JSON.stringify(props));
+  } catch {
+    /* ignore quota */
+  }
+}
+
 export default function EffectsScreen() {
   const { t } = useT();
   const [list, setList] = useState<EffectInfo[]>([]);
@@ -28,18 +45,33 @@ export default function EffectsScreen() {
   const current = useMemo(() => list.find((e) => e.name === active) ?? null, [list, active]);
 
   const select = (e: EffectInfo) => {
+    const saved = loadProps(e.name);
     const initial: Record<string, unknown> = {};
-    for (const p of e.properties) initial[p.key] = defaultFor(p);
+    for (const p of e.properties) initial[p.key] = saved?.[p.key] ?? defaultFor(p);
     setActive(e.name);
     setProps(initial);
+    localStorage.setItem("penumbra.fx.active", e.name);
+    saveProps(e.name, initial);
     api.setEffect({ name: e.name, props: initial }).catch(() => {});
   };
 
   const setProp = (key: string, value: unknown) => {
     const next = { ...props, [key]: value };
     setProps(next);
-    if (active) api.setEffect({ name: active, props: next }).catch(() => {});
+    if (active) {
+      saveProps(active, next);
+      api.setEffect({ name: active, props: next }).catch(() => {});
+    }
   };
+
+  // Restore the last-used effect + its saved values once the list arrives.
+  useEffect(() => {
+    if (list.length === 0 || active) return;
+    const savedName = localStorage.getItem("penumbra.fx.active");
+    const e = list.find((x) => x.name === savedName);
+    if (e) select(e);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [list]);
 
   const visible = list.filter((e) => e.name.toLowerCase().includes(query.trim().toLowerCase()));
 
