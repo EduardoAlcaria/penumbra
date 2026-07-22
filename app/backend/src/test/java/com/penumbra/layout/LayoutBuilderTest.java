@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LayoutBuilderTest {
 
-    private static final double CELL = LayoutBuilder.CELL;
+    private static final double SIZE = LayoutBuilder.FAN_SIZE;
 
     // A tiny 2-LED "fan": LED0 at cell (0,0), LED1 at cell (2,0), 3 cells wide.
     private static LayoutBuilder.FanSpec tinyFan(long id) {
@@ -30,8 +30,9 @@ class LayoutBuilderTest {
         LayoutBuilder.FanPlacement f0 = layout.fans().get(0);
         LayoutBuilder.FanPlacement f1 = layout.fans().get(1);
 
-        // Fan 1 sits one fan width plus one gap to the right of fan 0.
-        assertEquals(3 * CELL + 2 * CELL, f1.originX() - f0.originX());
+        // Daisy-chained fans sit flush, one footprint apart, so a chain reads
+        // as a single block.
+        assertEquals(SIZE, f1.originX() - f0.originX());
         assertEquals(f0.originY(), f1.originY());
 
         // Flat indices run through the chain.
@@ -39,9 +40,11 @@ class LayoutBuilderTest {
         assertEquals(1, f0.leds().get(1).flatIndex());
         assertEquals(2, f1.leds().get(0).flatIndex());
 
-        // LEDs sit at cell centers, measured from the fan's origin.
-        assertEquals(f0.originX() + 0.5 * CELL, f0.leds().get(0).x());
-        assertEquals(f0.originX() + 2.5 * CELL, f0.leds().get(1).x());
+        // LEDs sit at cell centers. The grid is 3 cells wide and 1 tall, so each
+        // axis gets its own cell size to fit the square footprint.
+        assertEquals(f0.originX() + 0.5 * (SIZE / 3), f0.leds().get(0).x());
+        assertEquals(f0.originX() + 2.5 * (SIZE / 3), f0.leds().get(1).x());
+        assertEquals(f0.originY() + 0.5 * SIZE, f0.leds().get(0).y());
         assertEquals(2, f0.leds().get(1).cx());
     }
 
@@ -75,8 +78,8 @@ class LayoutBuilderTest {
                 Map.of(0, List.of(tinyFan(1L))));
 
         LayoutBuilder.FanPlacement f = layout.fans().get(0);
-        assertEquals((LayoutBuilder.CANVAS_W - 3 * CELL) / 2, f.originX());
-        assertEquals((LayoutBuilder.CANVAS_H - 1 * CELL) / 2, f.originY());
+        assertEquals((LayoutBuilder.CANVAS_W - SIZE) / 2, f.originX());
+        assertEquals((LayoutBuilder.CANVAS_H - SIZE) / 2, f.originY());
     }
 
     @Test
@@ -88,8 +91,20 @@ class LayoutBuilderTest {
         LayoutBuilder.FanPlacement f = layout.fans().get(0);
         assertEquals(12.0, f.originX());
         assertEquals(34.0, f.originY());
-        assertEquals(12 + 0.5 * CELL, f.leds().get(0).x());
-        assertEquals(34 + 0.5 * CELL, f.leds().get(0).y());
+        assertEquals(12 + 0.5 * (SIZE / 3), f.leds().get(0).x());
+        assertEquals(34 + 0.5 * SIZE, f.leds().get(0).y());
+    }
+
+    @Test
+    void everyFanGetsTheSameSquareFootprint() {
+        LayoutBuilder.Layout layout = LayoutBuilder.build(
+                new int[] { 10 },
+                Map.of(0, List.of(tinyFan(1L))));
+        LayoutBuilder.FanPlacement f = layout.fans().get(0);
+        assertEquals(SIZE, f.width());
+        assertEquals(SIZE, f.height());
+        assertEquals(3, f.cols());
+        assertEquals(1, f.rows());
     }
 
     @Test
