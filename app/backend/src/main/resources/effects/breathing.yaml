@@ -1,0 +1,9 @@
+name: breathing
+description: One color fading in and out.
+canvas: { width: 8, height: 8 }
+properties:
+  - { key: color, label: Color, type: color, default: "#009bde" }
+  - { key: speed, label: Speed, type: number, default: 0.5, min: 0, max: 3 }
+layers:
+  - { type: solid, color: "@color" }
+  - { type: pulse, speed: "@speed" }
