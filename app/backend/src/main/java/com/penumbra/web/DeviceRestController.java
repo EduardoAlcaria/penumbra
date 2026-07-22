@@ -160,6 +160,18 @@ public class DeviceRestController {
         return effects.all().stream().map(DeviceRestController::effectDto).toList();
     }
 
+    /** The current effect + its property values, so the UI restores after a restart. */
+    @GetMapping("/effect/active")
+    public Map<String, Object> activeEffect() {
+        return Map.of("name", engine.activeName(), "props", engine.activeProps());
+    }
+
+    /** An n-wide strip of the active effect's canvas right now, for a live preview. */
+    @GetMapping("/effect/canvas")
+    public Map<String, Object> effectCanvas(@RequestParam(name = "n", defaultValue = "48") int n) {
+        return Map.of("colors", engine.previewStrip(Math.min(Math.max(n, 1), 256)));
+    }
+
     /** body: {"name":"side-to-side","props":{...}} or {"yaml":"...","props":{...}} */
     @PostMapping("/effect")
     public Map<String, Object> setEffect(@RequestBody Map<String, Object> body) {
