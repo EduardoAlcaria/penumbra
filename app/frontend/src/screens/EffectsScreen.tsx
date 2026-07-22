@@ -119,7 +119,7 @@ export default function EffectsScreen() {
                   value={[Number(props[p.key] ?? p.min ?? 0)]}
                   min={p.min ?? 0}
                   max={p.max ?? 1}
-                  step={0.05}
+                  step={(p.max ?? 1) > 5 ? 1 : 0.05}
                   onValueChange={([v]) => setProp(p.key, v)}
                 />
               ) : (
