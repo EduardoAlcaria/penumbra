@@ -1,9 +1,9 @@
 name: side-to-side
 description: Two colors wash back and forth across the setup.
-canvas: { width: 240, height: 8 }
+canvas: { width: 320, height: 200 }
 properties:
   - { key: color1, label: Color 1, type: color, default: "#082EFF" }
   - { key: color2, label: Color 2, type: color, default: "#FF03AF" }
-  - { key: speed, label: Speed, type: number, default: 0.4, min: 0, max: 3 }
+  - { key: speed, label: Speed, type: number, default: 15, min: 0, max: 100 }
 layers:
   - { type: wipe, axis: x, color: "@color1", color2: "@color2", speed: "@speed" }
