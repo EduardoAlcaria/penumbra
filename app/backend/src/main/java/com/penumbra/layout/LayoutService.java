@@ -100,6 +100,16 @@ public class LayoutService {
                 });
     }
 
+    /** Choose the SVG artwork for every fan on a channel. Null goes back to auto. */
+    public void setSvgModel(String controllerKey, int channel, String svgModel) {
+        for (ChannelAssignment a : assignments.findByControllerKeyOrderByChannelAscPositionAsc(controllerKey)) {
+            if (a.getChannel() != channel) continue;
+            a.setSvgModel(svgModel);
+            assignments.save(a);
+        }
+        version.incrementAndGet();
+    }
+
     private LayoutBuilder.FanSpec specFor(ChannelAssignment a) {
         Optional<ComponentProfile> found = components.findById(a.getComponentId());
         if (found.isEmpty()) return null;
@@ -108,7 +118,8 @@ public class LayoutService {
         String name = c.getDisplayName() == null ? String.valueOf(c.getProductName()) : c.getDisplayName();
         return new LayoutBuilder.FanSpec(c.getId(), name,
                 c.getImageUrl() == null ? "" : c.getImageUrl(),
-                c.getWidth(), c.getHeight(), coords, a.getCanvasX(), a.getCanvasY());
+                c.getWidth(), c.getHeight(), coords,
+                a.getCanvasX(), a.getCanvasY(), a.getSvgModel());
     }
 
     private int[][] parseCoords(String json) {
