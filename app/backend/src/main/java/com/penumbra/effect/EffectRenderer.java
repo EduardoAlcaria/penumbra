@@ -27,7 +27,7 @@ public class EffectRenderer {
     private void drawLayer(int[] px, int w, int h, EffectSpec.Layer l, Map<String, Object> props, double t) {
         String type = l.type() == null ? "solid" : l.type();
         boolean xAxis = !"y".equalsIgnoreCase(l.axis());
-        double speed = l.speed() == null ? 0.0 : l.speed();
+        double speed = resolveNumber(l.speed(), props, 0.0);
         switch (type) {
             case "solid" -> {
                 int c = resolveColor(l.color(), props, 0xFFFFFF);
@@ -35,7 +35,7 @@ public class EffectRenderer {
             }
             case "sweep" -> {
                 int c = resolveColor(l.color(), props, 0xFFFFFF);
-                double band = l.band() == null ? 0.2 : l.band();
+                double band = resolveNumber(l.band(), props, 0.2);
                 double center = (t * speed) % 1.0;
                 for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) {
                     double pos = axisPos(x, y, w, h, xAxis);
@@ -43,7 +43,7 @@ public class EffectRenderer {
                 }
             }
             case "rainbow" -> {
-                double spread = l.spread() == null ? 1.0 : l.spread();
+                double spread = resolveNumber(l.spread(), props, 1.0);
                 for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) {
                     double pos = axisPos(x, y, w, h, xAxis);
                     px[y * w + x] = Effect.hsv(pos * spread + t * speed, 1.0, 1.0);
@@ -74,6 +74,22 @@ public class EffectRenderer {
         int x = (int) Math.round(clamp01(nx) * (w - 1));
         int y = (int) Math.round(clamp01(ny) * (h - 1));
         return canvas[y * w + x];
+    }
+
+    /** Resolve a numeric layer field: a literal ("0.3"), an "@prop" reference, or fallback. */
+    private double resolveNumber(String s, Map<String, Object> props, double fallback) {
+        if (s == null) return fallback;
+        Object v = s;
+        if (s.startsWith("@")) {
+            v = props.get(s.substring(1));
+            if (v == null) return fallback;
+        }
+        if (v instanceof Number n) return n.doubleValue();
+        try {
+            return Double.parseDouble(String.valueOf(v));
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
     }
 
     private int resolveColor(String s, Map<String, Object> props, int fallback) {
