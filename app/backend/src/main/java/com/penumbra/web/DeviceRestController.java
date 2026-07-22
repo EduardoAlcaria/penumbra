@@ -113,19 +113,38 @@ public class DeviceRestController {
         return layoutDto(controllerKey, layout.layoutFor(controllerKey));
     }
 
+    /** Drop a fan at (x, y) on the canvas. Omit x/y to put it back on auto-arrange. */
+    @PutMapping("/layout/placement")
+    public Map<String, Object> setPlacement(@RequestParam String controllerKey,
+                                            @RequestParam int channel,
+                                            @RequestParam int position,
+                                            @RequestParam(required = false) Double x,
+                                            @RequestParam(required = false) Double y) {
+        layout.setPlacement(controllerKey, channel, position, x, y);
+        return layoutDto(controllerKey, layout.layoutFor(controllerKey));
+    }
+
     private static Map<String, Object> layoutDto(String key, com.penumbra.layout.LayoutBuilder.Layout l) {
-        List<Map<String, Object>> fans = l.fans().stream().map(f -> Map.<String, Object>of(
-                "componentId", f.componentId(),
-                "name", f.name(),
-                "imageUrl", f.imageUrl(),
-                "channel", f.channel(),
-                "position", f.position(),
-                "originX", f.originX(),
-                "originY", f.originY(),
-                "width", f.width(),
-                "height", f.height(),
-                "leds", f.leds().stream().map(p -> Map.<String, Object>of(
-                        "flatIndex", p.flatIndex(), "x", p.x(), "y", p.y())).toList())).toList();
+        List<Map<String, Object>> fans = l.fans().stream().map(f -> {
+            // LinkedHashMap, not Map.of: more than 10 entries and the order is
+            // the one a human reading the JSON expects.
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("componentId", f.componentId());
+            m.put("name", f.name());
+            m.put("imageUrl", f.imageUrl());
+            m.put("channel", f.channel());
+            m.put("position", f.position());
+            m.put("originX", f.originX());
+            m.put("originY", f.originY());
+            m.put("width", f.width());
+            m.put("height", f.height());
+            m.put("cols", f.cols());
+            m.put("rows", f.rows());
+            m.put("leds", f.leds().stream().map(p -> Map.<String, Object>of(
+                    "flatIndex", p.flatIndex(), "x", p.x(), "y", p.y(),
+                    "cx", p.cx(), "cy", p.cy())).toList());
+            return m;
+        }).toList();
         return Map.of(
                 "controllerKey", key,
                 "bounds", Map.of("minX", l.minX(), "minY", l.minY(), "maxX", l.maxX(), "maxY", l.maxY()),
