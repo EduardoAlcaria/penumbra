@@ -94,22 +94,16 @@ public class EffectRenderer {
         return h == 1 ? 0.0 : y / (double) (h - 1);
     }
 
+    /**
+     * Nearest sample at normalized (nx, ny). Nearest, not bilinear, on purpose:
+     * SignalRGB never interpolates. Its chain is Ultralight -> QImage::scaled(320,
+     * 200, Qt::FastTransformation) -> QPainter::drawPixmap with no
+     * SmoothPixmapTransform hint -> QImage::pixelColor(x, y), all nearest.
+     */
     public static int sample(int[] canvas, int w, int h, double nx, double ny) {
         int x = (int) Math.round(clamp01(nx) * (w - 1));
         int y = (int) Math.round(clamp01(ny) * (h - 1));
         return canvas[y * w + x];
-    }
-
-    /** Bilinear sample at normalized (nx, ny) — smooth, no banding between pixels. */
-    public static int sampleBilinear(int[] canvas, int w, int h, double nx, double ny) {
-        double fx = clamp01(nx) * (w - 1);
-        double fy = clamp01(ny) * (h - 1);
-        int x0 = (int) Math.floor(fx), y0 = (int) Math.floor(fy);
-        int x1 = Math.min(x0 + 1, w - 1), y1 = Math.min(y0 + 1, h - 1);
-        double tx = fx - x0, ty = fy - y0;
-        int top = lerp(canvas[y0 * w + x0], canvas[y0 * w + x1], tx);
-        int bot = lerp(canvas[y1 * w + x0], canvas[y1 * w + x1], tx);
-        return lerp(top, bot, ty);
     }
 
     /** Resolve a numeric layer field: a literal ("0.3"), an "@prop" reference, or fallback. */
