@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * An effect parsed from YAML: editable properties + parametric layers painted
- * onto a 2-D canvas. Keyframes are intentionally absent in v1 (Layer 3 editor).
+ * onto a 2-D canvas, with keyframe Tracks on any animatable layer field.
  * Records ignore unknown fields so the format can grow without breaking old files.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -34,17 +34,20 @@ public record EffectSpec(
 
     /**
      * One parametric paint op. Unused fields are null for a given type.
-     * Numeric fields are Strings so they can hold a literal ("0.3") or a
-     * property reference ("@speed") — the renderer resolves either.
+     *
+     * Animatable fields are Object because each accepts three shapes: a literal
+     * ("0.3", "#ff0000"), a property reference ("@speed"), or a {@link Track} of
+     * keyframes. The renderer resolves all three, and a track's endpoints go
+     * back through the same resolver, so keyframing a property reference works.
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Layer(
             String type,
-            String color,
-            String color2,
+            Object color,
+            Object color2,
             String axis,
-            String band,
-            String speed,
-            String spread,
-            String center) { }
+            Object band,
+            Object speed,
+            Object spread,
+            Object center) { }
 }
