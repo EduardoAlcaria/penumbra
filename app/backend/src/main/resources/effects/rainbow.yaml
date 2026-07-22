@@ -1,8 +1,7 @@
 name: rainbow
 description: A rainbow wave travelling across the setup.
-canvas: { width: 360, height: 8 }
+canvas: { width: 320, height: 200 }
 properties:
-  - { key: speed, label: Speed, type: number, default: 0.2, min: 0, max: 2 }
-  - { key: spread, label: Spread, type: number, default: 1, min: 0.2, max: 4 }
+  - { key: speed, label: Speed, type: number, default: 50, min: 0, max: 100 }
 layers:
-  - { type: rainbow, axis: x, speed: "@speed", spread: "@spread" }
+  - { type: rainbow, axis: x, speed: "@speed" }
