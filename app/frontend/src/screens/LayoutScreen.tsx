@@ -25,12 +25,25 @@ function fansToChans(fans: LayoutFan[]): Chans {
   return m;
 }
 
+/** Average of #RRGGBB strings → an rgb() string; transparent if none. */
+function avgColor(hexes: string[]): string {
+  if (hexes.length === 0) return "transparent";
+  let r = 0, g = 0, b = 0;
+  for (const h of hexes) {
+    const n = parseInt(h.slice(1), 16);
+    r += (n >> 16) & 0xff;
+    g += (n >> 8) & 0xff;
+    b += n & 0xff;
+  }
+  const k = hexes.length;
+  return `rgb(${Math.round(r / k)}, ${Math.round(g / k)}, ${Math.round(b / k)})`;
+}
+
 /**
- * Draws one controller's fans as a static board: each fan is its real top-view
- * photo sized to its footprint. No LED dots — the fan's own RGB region becomes
- * live-reactive in Layer 2 (overlaying the actual per-LED colors from the engine).
+ * Draws one controller's fans: each fan is its real top-view photo, with a live
+ * color tint (the average of its LEDs' current colors from the engine frame).
  */
-function Board({ layout }: { layout: ControllerLayout }) {
+function Board({ layout, colors }: { layout: ControllerLayout; colors: string[] }) {
   const { minX, minY, maxX, maxY } = layout.bounds;
   const w = Math.max(1, maxX - minX);
   const h = Math.max(1, maxY - minY);
@@ -40,24 +53,32 @@ function Board({ layout }: { layout: ControllerLayout }) {
       className="relative rounded-xl bg-muted/30 ring-1 ring-inset ring-white/10"
       style={{ width: (w + 2) * scale, height: (h + 2) * scale }}
     >
-      {layout.fans.map((fan) =>
-        fan.imageUrl ? (
-          <img
-            key={`img-${fan.channel}-${fan.position}`}
-            src={fan.imageUrl}
-            alt={fan.name}
-            loading="lazy"
-            className="absolute object-contain"
-            style={{
-              left: (fan.originX - minX + 1) * scale,
-              top: (fan.originY - minY + 1) * scale,
-              width: fan.width * scale,
-              height: fan.height * scale,
-            }}
-            onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
+      {layout.fans.map((fan) => (
+        <div
+          key={`fan-${fan.channel}-${fan.position}`}
+          className="absolute"
+          style={{
+            left: (fan.originX - minX + 1) * scale,
+            top: (fan.originY - minY + 1) * scale,
+            width: fan.width * scale,
+            height: fan.height * scale,
+          }}
+        >
+          {fan.imageUrl ? (
+            <img
+              src={fan.imageUrl}
+              alt={fan.name}
+              loading="lazy"
+              className="h-full w-full object-contain"
+              onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
+            />
+          ) : null}
+          <div
+            className="pointer-events-none absolute inset-0 rounded-md mix-blend-color"
+            style={{ background: avgColor(fan.leds.map((l) => colors[l.flatIndex]).filter(Boolean) as string[]) }}
           />
-        ) : null,
-      )}
+        </div>
+      ))}
     </div>
   );
 }
@@ -68,12 +89,26 @@ export default function LayoutScreen({ devices }: Props) {
   const [layout, setLayout] = useState<ControllerLayout | null>(null);
   const [chans, setChans] = useState<Chans>({});
   const [query, setQuery] = useState("");
+  const [colors, setColors] = useState<string[]>([]);
 
   const controllerKey = devices[0]?.id ?? null;
 
   useEffect(() => {
     api.components().then(setGear).catch(() => {});
   }, []);
+
+  // Poll the live frame so the board mirrors what the hardware is showing.
+  useEffect(() => {
+    if (!controllerKey) return;
+    const tick = () =>
+      api
+        .frame()
+        .then((f) => setColors(f.controllers.find((c) => c.controllerKey === controllerKey)?.colors ?? []))
+        .catch(() => {});
+    tick();
+    const id = setInterval(tick, 100); // 10 fps is plenty for a preview
+    return () => clearInterval(id);
+  }, [controllerKey]);
 
   useEffect(() => {
     if (!controllerKey) return;
@@ -144,7 +179,7 @@ export default function LayoutScreen({ devices }: Props) {
     <div className="space-y-6">
       {layout && layout.fans.length > 0 && (
         <Card className="animate-rise overflow-auto p-5">
-          <Board layout={layout} />
+          <Board layout={layout} colors={colors} />
         </Card>
       )}
 
