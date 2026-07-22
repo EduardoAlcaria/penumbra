@@ -13,11 +13,11 @@ class LayoutBuilderTest {
 
     // A tiny 2-LED "fan": LED0 at cell (0,0), LED1 at cell (2,0), 3 cells wide.
     private static LayoutBuilder.FanSpec tinyFan(long id) {
-        return new LayoutBuilder.FanSpec(id, "Tiny", "", 3, 1, new int[][] { {0, 0}, {2, 0} }, null, null);
+        return new LayoutBuilder.FanSpec(id, "Tiny", "", 3, 1, new int[][] { {0, 0}, {2, 0} }, null, null, null);
     }
 
     private static LayoutBuilder.FanSpec placedFan(long id, double x, double y) {
-        return new LayoutBuilder.FanSpec(id, "Tiny", "", 3, 1, new int[][] { {0, 0}, {2, 0} }, x, y);
+        return new LayoutBuilder.FanSpec(id, "Tiny", "", 3, 1, new int[][] { {0, 0}, {2, 0} }, x, y, null);
     }
 
     @Test
@@ -30,9 +30,10 @@ class LayoutBuilderTest {
         LayoutBuilder.FanPlacement f0 = layout.fans().get(0);
         LayoutBuilder.FanPlacement f1 = layout.fans().get(1);
 
-        // Daisy-chained fans sit flush, one footprint apart, so a chain reads
-        // as a single block.
-        assertEquals(SIZE, f1.originX() - f0.originX());
+        // Chained fans sit a footprint plus a small gap apart, so the chain reads
+        // as a block without the lit frames merging.
+        assertTrue(f1.originX() - f0.originX() > SIZE);
+        assertTrue(f1.originX() - f0.originX() < SIZE * 1.25);
         assertEquals(f0.originY(), f1.originY());
 
         // Flat indices run through the chain.
