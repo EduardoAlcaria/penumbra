@@ -81,12 +81,25 @@ public class EffectEngine {
             if (total <= 0) continue;
             Map<Integer, double[]> map = worldCache.computeIfAbsent(
                     device.id(), layout::worldMapFor);
+            boolean configured = !map.isEmpty();
             int[] frame = new int[total];
             for (int i = 0; i < total; i++) {
                 double[] xy = map.get(i);
-                double nx = xy != null ? xy[0] : (total == 1 ? 0.0 : i / (double) (total - 1));
-                double ny = xy != null ? xy[1] : 0.5;
-                int rgb = EffectRenderer.sample(canvas, w, h, nx, ny);
+                int rgb;
+                if (xy != null) {
+                    // Real fan LED: sample the effect at its position on the canvas.
+                    rgb = EffectRenderer.sampleBilinear(canvas, w, h, xy[0], xy[1]);
+                } else if (configured) {
+                    // Phantom LED on a configured controller (unassigned channel or
+                    // index past the real fans) — keep it dark, like SignalRGB drives
+                    // only the real per-channel LED count. This kills the blotches.
+                    rgb = 0;
+                } else {
+                    // No layout at all: light everything on a 1-D slice so an
+                    // unconfigured controller still shows the effect.
+                    double nx = total == 1 ? 0.0 : i / (double) (total - 1);
+                    rgb = EffectRenderer.sampleBilinear(canvas, w, h, nx, 0.5);
+                }
                 frame[i] = rgb;
                 device.setLed(i, rgb);
             }
