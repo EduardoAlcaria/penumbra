@@ -25,29 +25,18 @@ function fansToChans(fans: LayoutFan[]): Chans {
   return m;
 }
 
-/** Average of #RRGGBB strings → an rgb() string; transparent if none. */
-function avgColor(hexes: string[]): string {
-  if (hexes.length === 0) return "transparent";
-  let r = 0, g = 0, b = 0;
-  for (const h of hexes) {
-    const n = parseInt(h.slice(1), 16);
-    r += (n >> 16) & 0xff;
-    g += (n >> 8) & 0xff;
-    b += n & 0xff;
-  }
-  const k = hexes.length;
-  return `rgb(${Math.round(r / k)}, ${Math.round(g / k)}, ${Math.round(b / k)})`;
-}
-
 /**
- * Draws one controller's fans: each fan is its real top-view photo, with a live
- * color tint (the average of its LEDs' current colors from the engine frame).
+ * Draws one controller's fans: each fan is its real top-view photo with its live
+ * LEDs lit on top, at the coordinates where that model's RGB strip actually sits
+ * (for a CS120 those trace the square frame). Screen blend so an LED lights the
+ * photo instead of tinting the whole fan.
  */
 function Board({ layout, colors }: { layout: ControllerLayout; colors: string[] }) {
   const { minX, minY, maxX, maxY } = layout.bounds;
   const w = Math.max(1, maxX - minX);
   const h = Math.max(1, maxY - minY);
   const scale = 30; // px per world unit
+  const dot = scale * 0.6;
   return (
     <div
       className="relative rounded-xl bg-muted/30 ring-1 ring-inset ring-white/10"
@@ -73,10 +62,26 @@ function Board({ layout, colors }: { layout: ControllerLayout; colors: string[] 
               onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
             />
           ) : null}
-          <div
-            className="pointer-events-none absolute inset-0 rounded-md mix-blend-color"
-            style={{ background: avgColor(fan.leds.map((l) => colors[l.flatIndex]).filter(Boolean) as string[]) }}
-          />
+          {fan.leds.map((led) => {
+            const c = colors[led.flatIndex];
+            if (!c || c === "#000000") return null;
+            return (
+              <span
+                key={led.flatIndex}
+                className="pointer-events-none absolute rounded-full mix-blend-screen"
+                style={{
+                  left: `${((led.x - fan.originX + 0.5) / fan.width) * 100}%`,
+                  top: `${((led.y - fan.originY + 0.5) / fan.height) * 100}%`,
+                  width: dot,
+                  height: dot,
+                  marginLeft: -dot / 2,
+                  marginTop: -dot / 2,
+                  background: c,
+                  boxShadow: `0 0 ${dot}px ${dot / 3}px ${c}`,
+                }}
+              />
+            );
+          })}
         </div>
       ))}
     </div>
