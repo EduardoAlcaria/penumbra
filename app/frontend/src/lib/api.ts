@@ -83,6 +83,10 @@ export const api = {
   unsupported: () => fetch(`${BASE}/api/unsupported`).then(json<UnsupportedDevice[]>),
   rescan: () => fetch(`${BASE}/api/rescan`, { method: "POST" }).then(json<Device[]>),
   effects: () => fetch(`${BASE}/api/effects`).then(json<EffectInfo[]>),
+  activeEffect: () =>
+    fetch(`${BASE}/api/effect/active`).then(json<{ name: string; props: Record<string, unknown> }>),
+  effectCanvas: (n: number) =>
+    fetch(`${BASE}/api/effect/canvas?n=${n}`).then(json<{ colors: string[] }>),
   setEffect: (body: { name?: string; yaml?: string; props?: Record<string, unknown> }) =>
     fetch(`${BASE}/api/effect`, {
       method: "POST",
