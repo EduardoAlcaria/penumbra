@@ -124,6 +124,15 @@ public class DeviceRestController {
         return layoutDto(controllerKey, layout.layoutFor(controllerKey));
     }
 
+    /** Choose the SVG artwork for a channel's fans. Omit svg to go back to auto. */
+    @PutMapping("/layout/model")
+    public Map<String, Object> setSvgModel(@RequestParam String controllerKey,
+                                           @RequestParam int channel,
+                                           @RequestParam(required = false) String svg) {
+        layout.setSvgModel(controllerKey, channel, svg == null || svg.isBlank() ? null : svg);
+        return layoutDto(controllerKey, layout.layoutFor(controllerKey));
+    }
+
     private static Map<String, Object> layoutDto(String key, com.penumbra.layout.LayoutBuilder.Layout l) {
         List<Map<String, Object>> fans = l.fans().stream().map(f -> {
             // LinkedHashMap, not Map.of: more than 10 entries and the order is
@@ -140,6 +149,7 @@ public class DeviceRestController {
             m.put("height", f.height());
             m.put("cols", f.cols());
             m.put("rows", f.rows());
+            m.put("svgModel", f.svgModel() == null ? "" : f.svgModel());
             m.put("leds", f.leds().stream().map(p -> Map.<String, Object>of(
                     "flatIndex", p.flatIndex(), "x", p.x(), "y", p.y(),
                     "cx", p.cx(), "cy", p.cy())).toList());
