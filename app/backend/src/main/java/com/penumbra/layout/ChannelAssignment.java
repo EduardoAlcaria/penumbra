@@ -27,6 +27,10 @@ public class ChannelAssignment {
     /** FK → ComponentProfile.id. */
     private Long componentId;
 
+    /** Explicit placement on the 320x200 effect canvas; null = auto-arranged. */
+    private Double canvasX;
+    private Double canvasY;
+
     public ChannelAssignment() { }
 
     public ChannelAssignment(String controllerKey, int channel, int position, Long componentId) {
@@ -45,4 +49,8 @@ public class ChannelAssignment {
     public void setPosition(int v) { this.position = v; }
     public Long getComponentId() { return componentId; }
     public void setComponentId(Long v) { this.componentId = v; }
+    public Double getCanvasX() { return canvasX; }
+    public void setCanvasX(Double v) { this.canvasX = v; }
+    public Double getCanvasY() { return canvasY; }
+    public void setCanvasY(Double v) { this.canvasY = v; }
 }
