@@ -1,12 +1,17 @@
 package com.penumbra.effect;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.penumbra.device.DetectedDevice;
 import com.penumbra.device.DeviceManager;
 import com.penumbra.effect.spec.EffectSpec;
 import com.penumbra.layout.LayoutService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,6 +23,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class EffectEngine {
+    private static final Logger log = LoggerFactory.getLogger(EffectEngine.class);
+
+    /** Persisted active effect (name + property values), so a restart resumes it. */
+    private static final Path STATE_FILE = Path.of("config", "active-effect.json");
+    private final ObjectMapper json = new ObjectMapper();
 
     private final DeviceManager deviceManager;
     private final EffectRenderer renderer;
@@ -41,18 +51,71 @@ public class EffectEngine {
         this.renderer = renderer;
         this.store = store;
         this.layout = layout;
-        this.active = store.byName("rainbow"); // sensible default at boot
+        loadState(); // resume the last effect, or fall back to rainbow
     }
 
     public void setEffect(EffectSpec spec, Map<String, Object> props) {
         if (spec != null) {
             this.active = spec;
             this.props = props == null ? Map.of() : props;
+            saveState();
         }
     }
 
     public String activeName() {
         return active == null ? "none" : active.name();
+    }
+
+    public Map<String, Object> activeProps() {
+        return props;
+    }
+
+    /** Sample the active effect's canvas into an n-wide strip for a live UI preview. */
+    public String[] previewStrip(int n) {
+        EffectSpec fx = active;
+        if (fx == null || n <= 0) return new String[0];
+        int w = fx.canvas() == null ? 1 : Math.max(1, fx.canvas().width());
+        int h = fx.canvas() == null ? 1 : Math.max(1, fx.canvas().height());
+        int[] canvas = renderer.render(fx, props, System.currentTimeMillis() - startMillis);
+        String[] out = new String[n];
+        for (int i = 0; i < n; i++) {
+            double nx = n == 1 ? 0.0 : i / (double) (n - 1);
+            int rgb = EffectRenderer.sampleBilinear(canvas, w, h, nx, 0.5);
+            out[i] = String.format("#%06X", rgb & 0xFFFFFF);
+        }
+        return out;
+    }
+
+    private void loadState() {
+        try {
+            if (Files.exists(STATE_FILE)) {
+                Map<?, ?> m = json.readValue(Files.readAllBytes(STATE_FILE), Map.class);
+                EffectSpec spec = store.byName(String.valueOf(m.get("name")));
+                if (spec != null) {
+                    this.active = spec;
+                    Object p = m.get("props");
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> pm = p instanceof Map<?, ?> ? (Map<String, Object>) p : Map.of();
+                    this.props = pm;
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Could not load saved effect: {}", e.getMessage());
+        }
+        this.active = store.byName("rainbow");
+    }
+
+    private void saveState() {
+        try {
+            Files.createDirectories(STATE_FILE.getParent());
+            Map<String, Object> m = new java.util.LinkedHashMap<>();
+            m.put("name", active == null ? null : active.name());
+            m.put("props", props);
+            Files.write(STATE_FILE, json.writeValueAsBytes(m));
+        } catch (Exception e) {
+            log.warn("Could not save active effect: {}", e.getMessage());
+        }
     }
 
     public int[] frameFor(String controllerKey) {
