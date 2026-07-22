@@ -61,16 +61,22 @@ public class EffectRenderer {
                 for (int i = 0; i < px.length; i++) px[i] = scale(px[i], br);
             }
             case "wipe" -> {
-                // Two colors washing back and forth: a boundary sweeps across on a
-                // triangle wave, color on the left, color2 on the right. SignalRGB's
-                // "side to side" in spirit — full color, not a thin band.
+                // SignalRGB "Side to Side": one color wipes in and fully covers the
+                // canvas from one edge, then the other color wipes in from the
+                // OPPOSITE edge — alternating color AND side each pass.
                 int c1 = resolveColor(l.color(), props, 0xFFFFFF);
                 int c2 = resolveColor(l.color2(), props, 0x000000);
-                double phase = (t * speed) % 2.0;
-                double center = phase < 1.0 ? phase : 2.0 - phase; // 0 → 1 → 0
+                double phase = t * speed;
+                int wipe = (int) Math.floor(phase);
+                double progress = phase - wipe;
+                boolean even = (wipe & 1) == 0;
+                int incoming = even ? c1 : c2;
+                int background = even ? c2 : c1;
                 for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) {
                     double pos = axisPos(x, y, w, h, xAxis);
-                    px[y * w + x] = pos <= center ? c1 : c2;
+                    // even passes cover from the right (pos ≥ 1-progress), odd from the left.
+                    boolean covered = even ? pos >= 1 - progress : pos <= progress;
+                    px[y * w + x] = covered ? incoming : background;
                 }
             }
             default -> { /* unknown layer type: ignore, keep canvas as-is */ }
