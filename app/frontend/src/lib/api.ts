@@ -51,7 +51,9 @@ export interface Component {
   imageUrl: string;
 }
 
-export interface LayoutLed { flatIndex: number; x: number; y: number }
+/** x/y are canvas pixels; cx/cy are the LED's cell in the component's own grid. */
+export interface LayoutLed { flatIndex: number; x: number; y: number; cx: number; cy: number }
+/** originX/Y, width/height are canvas pixels; cols/rows are the LED grid. */
 export interface LayoutFan {
   componentId: number;
   name: string;
@@ -62,6 +64,8 @@ export interface LayoutFan {
   originY: number;
   width: number;
   height: number;
+  cols: number;
+  rows: number;
   leds: LayoutLed[];
 }
 export interface ControllerLayout {
@@ -97,6 +101,13 @@ export const api = {
     fetch(`${BASE}/api/frame`).then(json<{ controllers: ControllerFrame[] }>),
   layout: () =>
     fetch(`${BASE}/api/layout`).then(json<{ controllers: ControllerLayout[] }>),
+  /** Drop a fan at (x, y) on the canvas; omit x/y to put it back on auto-arrange. */
+  setPlacement: (controllerKey: string, channel: number, position: number, x?: number, y?: number) => {
+    const q = new URLSearchParams({ controllerKey, channel: String(channel), position: String(position) });
+    if (x !== undefined) q.set("x", String(x));
+    if (y !== undefined) q.set("y", String(y));
+    return fetch(`${BASE}/api/layout/placement?${q}`, { method: "PUT" }).then(json<ControllerLayout>);
+  },
   setAssignments: (controllerKey: string, items: Assignment[]) =>
     fetch(`${BASE}/api/layout/assignments?controllerKey=${encodeURIComponent(controllerKey)}`, {
       method: "PUT",
