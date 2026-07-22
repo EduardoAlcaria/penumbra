@@ -31,6 +31,9 @@ public class ChannelAssignment {
     private Double canvasX;
     private Double canvasY;
 
+    /** Which SVG artwork draws this fan; null = picked from its LED layout. */
+    private String svgModel;
+
     public ChannelAssignment() { }
 
     public ChannelAssignment(String controllerKey, int channel, int position, Long componentId) {
@@ -53,4 +56,6 @@ public class ChannelAssignment {
     public void setCanvasX(Double v) { this.canvasX = v; }
     public Double getCanvasY() { return canvasY; }
     public void setCanvasY(Double v) { this.canvasY = v; }
+    public String getSvgModel() { return svgModel; }
+    public void setSvgModel(String v) { this.svgModel = v; }
 }
