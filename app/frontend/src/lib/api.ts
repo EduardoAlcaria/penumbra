@@ -66,6 +66,8 @@ export interface LayoutFan {
   height: number;
   cols: number;
   rows: number;
+  /** Chosen SVG artwork; "" means pick it from the LED layout. */
+  svgModel: string;
   leds: LayoutLed[];
 }
 export interface ControllerLayout {
@@ -107,6 +109,12 @@ export const api = {
     if (x !== undefined) q.set("x", String(x));
     if (y !== undefined) q.set("y", String(y));
     return fetch(`${BASE}/api/layout/placement?${q}`, { method: "PUT" }).then(json<ControllerLayout>);
+  },
+  /** Choose the SVG artwork for a channel's fans; omit svg to go back to auto. */
+  setSvgModel: (controllerKey: string, channel: number, svg?: string) => {
+    const q = new URLSearchParams({ controllerKey, channel: String(channel) });
+    if (svg) q.set("svg", svg);
+    return fetch(`${BASE}/api/layout/model?${q}`, { method: "PUT" }).then(json<ControllerLayout>);
   },
   setAssignments: (controllerKey: string, items: Assignment[]) =>
     fetch(`${BASE}/api/layout/assignments?controllerKey=${encodeURIComponent(controllerKey)}`, {
